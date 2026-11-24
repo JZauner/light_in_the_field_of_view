@@ -51,7 +51,7 @@
       {
         title: 'What if the lamp hangs lower?',
         lead: 'Keep your eyes on the bird as the lamp descends. Watch the ray from the middle of the lamp. Once it slips below the hood’s upper edge, light can reach the eye directly. The tabletop still reflects light towards the eye, too.',
-        body: 'When designing lighting for the body clock, start with what a person can see. Only light that reaches the retina can stimulate the cells that signal to the body clock. During the day, place a luminaire or light a surface within view while avoiding glare. In the evening, dim bright surfaces and keep bright luminaires out of view to reduce that stimulus.',
+        body: 'When designing lighting for the body clock, start with what a person can see. Only light that reaches the retina can stimulate the cells that signal to the body clock. During the day, light surfaces within view or place luminaires with large emitting surfaces there, while avoiding glare. In the evening, dim bright surfaces and keep bright luminaires out of view to reduce that stimulus.',
         alt: 'The same desk and level gaze, with the ceiling lamp now hung on cables. As the lamp lowers, its direct ray crosses the upper field limit and reaches the eye. The reflected path via the desk remains visible.',
         caption: 'Next, try experiment 01. Keep the gaze fixed and switch between Open and Radiance hood to compare the readings in lux.'
       }
@@ -95,7 +95,7 @@
       {
         title: 'Was ändert sich, wenn die Leuchte tiefer hängt?',
         lead: 'Schau weiter zur Amsel, während die Leuchte sinkt. Beobachte den Strahl aus der Mitte der Leuchte. Sobald er die obere Blendengrenze unterschreitet, erreicht das Licht das Auge auch direkt. Die Tischplatte reflektiert weiterhin Licht zum Auge.',
-        body: 'Wenn du Licht für die innere Uhr planst, geh von dem aus, was eine Person von ihrem Platz aus sieht. Nur Licht, das die Netzhaut erreicht, kann die Zellen anregen, die der inneren Uhr ein Signal geben. Platziere tagsüber eine Leuchte im Blickfeld oder beleuchte dort eine Fläche, ohne zu blenden. Abends lässt sich der Lichtreiz verringern, indem du helle Flächen dimmst und helle Leuchten außerhalb des Blickfelds anordnest.',
+        body: 'Wenn du Licht für die innere Uhr planst, geh von dem aus, was eine Person von ihrem Platz aus sieht. Nur Licht, das die Netzhaut erreicht, kann die Zellen anregen, die der inneren Uhr ein Signal geben. Beleuchte tagsüber Flächen im Blickfeld oder setze dort Leuchten mit großen Lichtaustrittsflächen ein, ohne zu blenden. Abends lässt sich der Lichtreiz verringern, indem du helle Flächen dimmst und helle Leuchten außerhalb des Blickfelds anordnest.',
         alt: 'Am selben Schreibtisch bleibt der Blick zur Amsel gerichtet. Die Leuchte sinkt an Seilen von der Decke herab. Ihr direkter Strahl überquert die obere Blendengrenze und erreicht das Auge. Der reflektierte Weg über den Tisch bleibt sichtbar.',
         caption: 'Probiere das in Versuch 01 aus. Lass die Blickrichtung gleich und wechsle zwischen „Offen“ und „Blende“, um die Messwerte in Lux zu vergleichen.'
       }

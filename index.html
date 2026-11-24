@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#f8f7f1">
 <meta name="description" content="Explore how the field of view affects light measurements at the eye. Five guided experiments and an open lab in an interactive model room." data-copy="content=0">
 <title data-copy="t=1">Light in the field of view · Interactive room model</title>
-<link rel="stylesheet" href="assets/site.css?v=a67601f9946e">
+<link rel="stylesheet" href="assets/site.css?v=6c19da33edc8">
 <link rel="stylesheet" href="assets/intro.css?v=8257a672d0e4">
 </head>
 <body data-edition="web">
@@ -97,7 +97,7 @@
             <div class="parameter-head"><canvas class="parameter-picture" id="preview-source" width="216" height="192" aria-hidden="true"></canvas><div class="parameter-description">
               <label for="wall-source" id="label-source" data-copy="t=48">Front wall light</label><span class="parameter-value" id="window-note"></span></div>
               <span class="fixed-mark" hidden><i class="lock-symbol" aria-hidden="true"></i><span class="sr" data-copy="t=199">Fixed in this experiment</span></span></div>
-            <select id="wall-source" aria-describedby="window-note">
+            <select id="wall-source" aria-describedby="window-note help-mix">
               <option value="off" data-copy="t=49">Off</option><option value="panel" data-copy="t=50">Wall panel</option><option value="window" data-copy="t=51">Diffuse daylight</option></select>
           </div>
         </div>
@@ -113,10 +113,10 @@
           <div class="parameter" data-setting="mix" role="group" aria-labelledby="label-mix">
             <div class="parameter-head"><canvas class="parameter-picture" id="preview-mix" width="216" height="192" aria-hidden="true"></canvas><div class="parameter-description">
               <label for="range-mix" id="label-mix" data-copy="t=219">Light distribution</label><output id="value-mix" for="range-mix"></output></div>
-              <button type="button" class="fixed-mark lock-help" aria-labelledby="label-mix fixed-mix" aria-describedby="hint-mix" hidden><i class="lock-symbol" aria-hidden="true"></i><span id="fixed-mix" class="sr" data-copy="t=199">Fixed in this experiment</span></button>
-              <span id="hint-mix" class="setting-hint" role="tooltip" hidden></span></div>
+              <button type="button" class="fixed-mark lock-help" aria-labelledby="label-mix fixed-mix" aria-describedby="hint-mix" hidden><i class="lock-symbol" aria-hidden="true"></i><span class="info-icon" aria-hidden="true">i</span><span id="fixed-mix" class="sr">Luminous flux</span></button>
+              <span id="hint-mix" class="setting-hint" role="tooltip" hidden><span id="help-mix"></span><span id="mix-availability" hidden></span></span></div>
             <div class="slider-line"><input id="range-mix" type="range" min="0" max="1" step="1" aria-describedby="help-mix">
-              <div class="slider-ends" aria-hidden="true"><span data-copy="t=201">Front wall</span><span data-copy="t=216">Ceiling</span></div></div><p class="fixed-explanation" hidden data-copy="t=217">Constant ceiling luminance</p><span class="sr" id="help-mix" data-copy="t=218">The slider shows the share of luminous flux from the ceiling. With the front wall light off, the ceiling supplies 100%.</span>
+              <div class="slider-ends" aria-hidden="true"><span data-copy="t=201">Front wall</span><span data-copy="t=216">Ceiling</span></div></div><p class="fixed-explanation" hidden data-copy="t=217">Constant ceiling luminance</p>
           </div>
           <div class="parameter" data-setting="lamp" role="group" aria-labelledby="label-lamp">
             <div class="parameter-head"><canvas class="parameter-picture" id="preview-lamp" width="216" height="192" aria-hidden="true"></canvas><div class="parameter-description">
@@ -465,15 +465,15 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   </div>
 </dialog>
 <noscript lang="en">Enable JavaScript to use the interactive experiments.</noscript>
-<script src="assets/copy.js?v=f81d05a76dc9"></script>
+<script src="assets/copy.js?v=67891609a503"></script>
 <script src="assets/locale.js?v=69178f8273f6"></script>
 <script src="assets/intro-eyes.js?v=c4a56752289e"></script>
 <script src="assets/intro-meter.js?v=8627136d4159"></script>
 <script src="assets/intro-shell.js?v=0a7497fc4abb"></script>
 <script src="assets/pako-inflate.min.js"></script>
 <script src="assets/data/model.js"></script>
-<script src="assets/app.js?v=e1bee4b43e57"></script>
-<script src="assets/render.js?v=8e88a295a32a"></script>
+<script src="assets/app.js?v=b953368b00d4"></script>
+<script src="assets/render.js?v=93cd7ef9d737"></script>
 <script src="assets/experiment-tour.js?v=d5f1472d3789"></script>
 <script src="assets/start.js?v=ba3dead7cb24"></script>
 </body></html>

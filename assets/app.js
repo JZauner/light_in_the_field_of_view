@@ -246,7 +246,7 @@ function sliderValue(key,state) {
   }
   if(key==='lamp')return roof?tr('Gesamte Decke'):meters(room.lampX[state.lamp]);
   if(roof&&state.source!=='off')return tr('Decke und Stirnwand');
-  return tr('{value} · Decke',{value:percentText(data.wallShare[mixControlValue(state)])});
+  return tr('{value} Lichtstrom von der Decke',{value:percentText(data.wallShare[mixControlValue(state)])});
 }
 
 const parameterCards = Object.fromEntries(
@@ -271,7 +271,7 @@ function installSettingHints(){
       if(activeSettingHint!==hint)closeSettingHint();
       activeSettingHint=hint;hint.hidden=false;placeSettingHint();
     }
-    card.addEventListener('pointerenter',event=>{if(event.pointerType!=='touch')show();});
+    button.addEventListener('pointerenter',event=>{if(event.pointerType!=='touch')show();});
     card.addEventListener('pointerleave',event=>{
       if(event.pointerType!=='touch'&&activeSettingHint===hint&&!button.matches(':focus-visible'))closeSettingHint();
     });
@@ -348,9 +348,14 @@ function syncSettings(state){
   }
   for(const key of sliderKeys){
     const card=parameterCards[key],input=el('range-'+key),locked=!adjustable(key);
+    const hasHint=locked||key==='mix';
     card.classList.toggle('fixed-parameter',locked);
-    card.querySelector('.fixed-mark').hidden=!locked;
-    if(!locked&&activeSettingHint&&card.contains(activeSettingHint))closeSettingHint();
+    card.querySelector('.fixed-mark').hidden=!hasHint;
+    if(!hasHint&&activeSettingHint&&card.contains(activeSettingHint))closeSettingHint();
+    if(key==='mix'){
+      el('fixed-mix').textContent=tr(locked?'Im Versuch fest':'Hinweis zum Lichtstrom');
+      el('mix-availability').hidden=!locked;
+    }
     input.disabled=locked;
     input.value=key==='eye'&&roof?config.midEye:key==='mix'?mixControlValue(state):state[key];
     const value=sliderValue(key,state);
@@ -546,8 +551,15 @@ function chapterLabels(){
   chapters.forEach((item,i)=>{
     if(!item.key)return;
     const available=tr('Einstellbar in Versuch {n} ({name}) und im freien Versuch.',{n:String(i+1).padStart(2,'0'),name:tr(item.nav)});
-    el('hint-'+item.key).textContent=item.key==='mix'?available+' '+tr('Dazu muss das Licht an der Stirnwand eingeschaltet sein.'):available;
+    if(item.key==='mix'){
+      el('mix-availability').textContent=available+' '+tr('Dazu muss das Licht an der Stirnwand eingeschaltet sein.');
+    }else{
+      el('hint-'+item.key).textContent=available;
+    }
   });
+  el('help-mix').textContent=tr(chapter===4
+    ? 'Hier bleibt die Leuchtdichte der gesamten Decke konstant. Das Fenster oder Wandpanel liefert zusätzlichen Lichtstrom. Schaltest du die Lichtquelle an der Stirnwand aus, entfällt dieser Beitrag.'
+    : 'Die Summe der Lichtströme von Deckenpanel und Stirnwand (Fenster oder Wandpanel) bleibt gleich. Schaltest du die Lichtquelle an der Stirnwand aus, übernimmt das Deckenpanel ihren Anteil. Die Beleuchtungsstärke am Auge kann sich dabei ändern.');
 }
 function go(index,{initial=false}={}) {
   if(index<0||index>=chapters.length)return;

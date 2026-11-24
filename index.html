@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#f8f7f1">
 <meta name="description" content="Explore how the field of view affects light measurements at the eye. Five guided experiments and an open lab in an interactive model room." data-copy="content=0">
 <title data-copy="t=1">Light in the field of view · Interactive room model</title>
-<link rel="stylesheet" href="assets/site.css?v=6c19da33edc8">
+<link rel="stylesheet" href="assets/site.css?v=1c04275f2af1">
 <link rel="stylesheet" href="assets/intro.css?v=8257a672d0e4">
 </head>
 <body data-edition="web">
@@ -96,7 +96,8 @@
           <div class="parameter" data-setting="source" role="group" aria-labelledby="label-source">
             <div class="parameter-head"><canvas class="parameter-picture" id="preview-source" width="216" height="192" aria-hidden="true"></canvas><div class="parameter-description">
               <label for="wall-source" id="label-source" data-copy="t=48">Front wall light</label><span class="parameter-value" id="window-note"></span></div>
-              <span class="fixed-mark" hidden><i class="lock-symbol" aria-hidden="true"></i><span class="sr" data-copy="t=199">Fixed in this experiment</span></span></div>
+              <span class="fixed-mark" hidden><i class="lock-symbol" aria-hidden="true"></i><span class="sr" data-copy="t=199">Fixed in this experiment</span></span>
+              <span id="hint-source" class="setting-hint" role="tooltip" hidden></span></div>
             <select id="wall-source" aria-describedby="window-note help-mix">
               <option value="off" data-copy="t=49">Off</option><option value="panel" data-copy="t=50">Wall panel</option><option value="window" data-copy="t=51">Diffuse daylight</option></select>
           </div>
@@ -139,7 +140,7 @@
       <div class="rail-foot">
         <details id="material-settings"><summary data-copy="t=54">Adjust surface reflectance</summary>
           <div id="material-grid" class="material-grid"></div><div class="glass-row"><span data-copy="t=55">Glass surface</span><strong data-copy="t=56">8% · fixed</strong></div>
-          <p class="material-help" data-copy="t=57">The floor, walls, ceiling and desk scatter reflected light in many directions. The glass on the front wall produces a mirror-like reflection even when its light source is off.</p>
+          <p class="material-help" data-copy="t=57">The floor, walls, ceiling and desk scatter light in many directions. The front wall glass reflects like a mirror even with the wall light off.</p>
           <p id="materials-off" hidden data-copy="t=222">Turn on reflections to change the surface reflectance.</p></details>
         <div class="lab-tools" id="lab-tools" hidden><button id="pin" type="button" data-copy="t=223">Save setting</button><button id="restore" type="button" hidden data-copy="t=224">Restore</button><p id="saved-note" class="saved-output"></p></div>
       </div>
@@ -465,15 +466,15 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   </div>
 </dialog>
 <noscript lang="en">Enable JavaScript to use the interactive experiments.</noscript>
-<script src="assets/copy.js?v=67891609a503"></script>
+<script src="assets/copy.js?v=58bd592dc8bd"></script>
 <script src="assets/locale.js?v=69178f8273f6"></script>
 <script src="assets/intro-eyes.js?v=c4a56752289e"></script>
 <script src="assets/intro-meter.js?v=8627136d4159"></script>
 <script src="assets/intro-shell.js?v=0a7497fc4abb"></script>
 <script src="assets/pako-inflate.min.js"></script>
 <script src="assets/data/model.js"></script>
-<script src="assets/app.js?v=b953368b00d4"></script>
-<script src="assets/render.js?v=93cd7ef9d737"></script>
+<script src="assets/app.js?v=a20da7590cf0"></script>
+<script src="assets/render.js?v=c3dc54672b16"></script>
 <script src="assets/experiment-tour.js?v=d5f1472d3789"></script>
 <script src="assets/start.js?v=ba3dead7cb24"></script>
 </body></html>

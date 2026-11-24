@@ -110,7 +110,7 @@ function chair(P,m,spatial,foreground){
   chairBoard(P,[[rearEdge,.857],[rearEdge+.037,.861],[rearEdge+.073,.683],[rearEdge+.066,.665],[rearEdge+.031,.668]],
     near,far,wood,foreground);
 }
-function personInRoom(P,s,m,faces){
+function seatedBodyInRoom(P,s,m,faces){
   // Die Knie stehen nebeneinander. Für jedes Körperteil verdecken nur solche
   // Möbelstücke die Figur, die zwischen seiner Ebene und dem Betrachter liegen.
   for(const [part,side] of [['far',.10],['near',-.13],['body',0]]){
@@ -136,21 +136,26 @@ function personInRoom(P,s,m,faces){
   }
 }
 const faceProfile=new Path2D('M-.205 -1.219 Q-.214 -1.311 -.12 -1.326 Q-.027 -1.345 .006 -1.254 L.009 -1.21 L.041 -1.168 Q.044 -1.155 .015 -1.153 L.008 -1.109 Q-.01 -1.074 -.062 -1.075 Q-.124 -1.074 -.163 -1.13 Z');
+const readerColors={dark:'#284642',skin:'#c8875f',skinLight:'#dfa77d',cloth:'#377967'};
+function figureShape(outline,fill,stroke,width=.012){
+  const p=typeof outline==='string'?new Path2D(outline):outline;
+  if(fill){ctx.fillStyle=fill;ctx.fill(p);}
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke(p);}
+}
 function seatedPerson(base,s,m,part='all'){
   ctx.save();ctx.translate(...base);ctx.scale(s,s);
   // Profil am festen Sitzplatz, lokaler Ursprung unter dem Auge in Neutralstellung.
-  function shape(d,fill,stroke,w=.012){const p=typeof d==='string'?new Path2D(d):d;if(fill){ctx.fillStyle=fill;ctx.fill(p);}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=w;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke(p);}}
-  const dark='#284642',skin='#c8875f', skinLight='#dfa77d',cloth='#377967';
+  const {dark,skin,skinLight,cloth}=readerColors;
   if(part==='far'||part==='all'){
     // Ein Fuß ist etwas unter den Sitz zurückgestellt, beide Sohlen liegen auf z = 0.
-    shape('M-.27 -.56 Q-.12 -.52 .066 -.53 Q.144 -.535 .148 -.458 Q.15 -.435 .132 -.400 L-.057 -.131 L-.145 -.139 L.034 -.445 L-.25 -.445 Z','#456059',dark);
-    shape('M-.146 -.143 L-.056 -.139 Q-.041 -.099 .005 -.082 Q.046 -.073 .052 -.039 L.050 -.014 Q.046 0 .034 0 L-.152 0 Q-.165 -.008 -.158 -.058 Z','#806044',dark);
-    shape('M-.159 -.025 Q-.063 -.015 .052 -.028 L.050 -.012 Q.047 0 .034 0 L-.152 0 Q-.162 -.002 -.159 -.025 Z','#69503d',dark,.006);
+    figureShape('M-.27 -.56 Q-.12 -.52 .066 -.53 Q.144 -.535 .148 -.458 Q.15 -.435 .132 -.400 L-.057 -.131 L-.145 -.139 L.034 -.445 L-.25 -.445 Z','#456059',dark);
+    figureShape('M-.146 -.143 L-.056 -.139 Q-.041 -.099 .005 -.082 Q.046 -.073 .052 -.039 L.050 -.014 Q.046 0 .034 0 L-.152 0 Q-.165 -.008 -.158 -.058 Z','#806044',dark);
+    figureShape('M-.159 -.025 Q-.063 -.015 .052 -.028 L.050 -.012 Q.047 0 .034 0 L-.152 0 Q-.162 -.002 -.159 -.025 Z','#69503d',dark,.006);
   }
   if(part==='near'||part==='all'){
-    shape('M-.270 -.583 Q-.16 -.57 .13 -.54 Q.205 -.535 .218 -.48 L.255 -.115 L.158 -.10 L.105 -.445 L-.215 -.445 C-.295 -.444 -.330 -.474 -.331 -.513 Q-.332 -.570 -.270 -.583 Z','#37534d',dark);
-    shape('M.153 -.126 L.249 -.136 Q.272 -.089 .333 -.074 Q.363 -.066 .371 -.02 L.362 0 L.162 0 Q.143 -.012 .153 -.126 Z','#a67550',dark);
-    shape('M.15 -.025 Q.235 -.014 .371 -.026 L.37 -.014 Q.367 0 .359 0 L.162 0 Q.15 -.003 .15 -.025 Z','#805a3f',dark,.006);
+    figureShape('M-.270 -.583 Q-.16 -.57 .13 -.54 Q.205 -.535 .218 -.48 L.255 -.115 L.158 -.10 L.105 -.445 L-.215 -.445 C-.295 -.444 -.330 -.474 -.331 -.513 Q-.332 -.570 -.270 -.583 Z','#37534d',dark);
+    figureShape('M.153 -.126 L.249 -.136 Q.272 -.089 .333 -.074 Q.363 -.066 .371 -.02 L.362 0 L.162 0 Q.143 -.012 .153 -.126 Z','#a67550',dark);
+    figureShape('M.15 -.025 Q.235 -.014 .371 -.026 L.37 -.014 Q.367 0 .359 0 L.162 0 Q.15 -.003 .15 -.025 Z','#805a3f',dark,.006);
   }
   if(part==='far'||part==='near'){ctx.restore();return;}
   // Der Schädelansatz wandert mit dem Hals. Die Nacken- und Kinnkonturen
@@ -167,42 +172,48 @@ function seatedPerson(base,s,m,part='all'){
   ctx.bezierCurveTo(-.091,-1.010,...onHead(-.087,1.076),...onHead(-.071,1.119));
   ctx.closePath();ctx.fillStyle=skin;ctx.fill();ctx.strokeStyle=dark;ctx.lineWidth=.009;ctx.stroke();
   // The shoulder falls from the collar into a fuller shirt over the seated hip.
-  shape(`M-.196 -.995 C-.213 -.984 -.236 -.976 -.253 -.956
+  figureShape(`M-.196 -.995 C-.213 -.984 -.236 -.976 -.253 -.956
     C-.278 -.927 -.287 -.873 -.296 -.816 C-.307 -.744 -.318 -.657 -.338 -.585
     Q-.344 -.566 -.332 -.561 C-.260 -.540 -.112 -.538 -.015 -.554
     Q.002 -.557 0 -.575 C-.004 -.642 -.023 -.706 -.023 -.764
     C-.024 -.818 -.009 -.856 -.014 -.900 Q-.018 -.949 -.070 -.978
     Q-.115 -.953 -.158 -.970 Q-.182 -.979 -.196 -.995 Z`,cloth,dark);
-  shape('M-.196 -.991 Q-.146 -.932 -.069 -.973',null,'#73a392',.008);
-  shape('M-.326 -.576 C-.243 -.555 -.110 -.552 -.022 -.568',null,'#529080',.006);
+  figureShape('M-.196 -.991 Q-.146 -.932 -.069 -.973',null,'#73a392',.008);
+  figureShape('M-.326 -.576 C-.243 -.555 -.110 -.552 -.022 -.568',null,'#529080',.006);
   // The cuff, wrist and back of the hand share a level contour over the desk.
-  shape(`M.143 -.761 C.165 -.760 .185 -.760 .203 -.762
+  figureShape(`M.143 -.761 C.165 -.760 .185 -.760 .203 -.762
     C.225 -.764 .245 -.765 .261 -.760 C.285 -.752 .306 -.746 .321 -.745
     Q.333 -.744 .332 -.738 Q.331 -.733 .321 -.733 L.309 -.734
     Q.318 -.733 .316 -.728 Q.314 -.723 .304 -.723
     C.285 -.723 .271 -.729 .257 -.730 C.244 -.730 .232 -.724 .219 -.723
     C.193 -.722 .169 -.725 .143 -.727 Z`,skinLight,dark,.006);
-  shape('M.253 -.749 C.272 -.746 .292 -.737 .309 -.734 M.210 -.744 C.225 -.744 .239 -.735 .255 -.731',
+  figureShape('M.253 -.749 C.272 -.746 .292 -.737 .309 -.734 M.210 -.744 C.225 -.744 .239 -.735 .255 -.731',
     null,'#9a6b4d',.0035);
-  shape(`M-.178 -.945 C-.149 -.973 -.103 -.965 -.083 -.920 L-.033 -.807
+  figureShape(`M-.178 -.945 C-.149 -.973 -.103 -.965 -.083 -.920 L-.033 -.807
     C-.020 -.781 -.008 -.772 .015 -.768 C.057 -.761 .114 -.761 .163 -.761
     L.159 -.724 C.107 -.724 .037 -.723 -.016 -.728 Q-.061 -.731 -.082 -.759
     L-.152 -.849 Q-.203 -.919 -.178 -.945 Z`,'#438775',dark,.0095);
-  shape('M.147 -.758 L.143 -.727',null,'#73a392',.006);
-  ctx.save();ctx.translate(m.frame.skullX,-m.frame.skullZ);ctx.rotate(-m.frame.deg*Math.PI/180);ctx.translate(-config.skullX,config.skullZ);
-  shape(faceProfile,skinLight,dark);
-  shape('M-.181 -1.147 C-.215 -1.176 -.233 -1.235 -.218 -1.292 Q-.204 -1.350 -.147 -1.365 Q-.071 -1.386 -.017 -1.348 Q.012 -1.325 .017 -1.288 Q-.010 -1.275 -.045 -1.286 Q-.065 -1.262 -.108 -1.25 L-.120 -1.195 Q-.131 -1.182 -.149 -1.183 Q-.170 -1.169 -.181 -1.147 Z','#3b3930',dark);
-  shape('M-.169 -1.19 Q-.181 -1.225 -.153 -1.226 Q-.127 -1.222 -.136 -1.189 Q-.144 -1.171 -.159 -1.177',skin,dark,.009);
-  shape('M-.259 -1.262 Q-.287 -1.28 -.276 -1.317 Q-.26 -1.355 -.225 -1.34 Q-.191 -1.316 -.211 -1.278 Q-.229 -1.254 -.259 -1.262 Z','#444135',dark);
-  shape('M-.057 -1.238 Q-.035 -1.249 -.012 -1.239',null,'#604a37',.007);
+  figureShape('M.147 -.758 L.143 -.727',null,'#73a392',.006);
+  ctx.restore();
+  if(part==='all')seatedHead(base,s,m);
+}
+function seatedHead(base,s,m){
+  const {dark,skin,skinLight}=readerColors;
+  ctx.save();ctx.translate(...base);ctx.scale(s,s);
+  ctx.translate(m.frame.skullX,-m.frame.skullZ);ctx.rotate(-m.frame.deg*Math.PI/180);ctx.translate(-config.skullX,config.skullZ);
+  figureShape(faceProfile,skinLight,dark);
+  figureShape('M-.181 -1.147 C-.215 -1.176 -.233 -1.235 -.218 -1.292 Q-.204 -1.350 -.147 -1.365 Q-.071 -1.386 -.017 -1.348 Q.012 -1.325 .017 -1.288 Q-.010 -1.275 -.045 -1.286 Q-.065 -1.262 -.108 -1.25 L-.120 -1.195 Q-.131 -1.182 -.149 -1.183 Q-.170 -1.169 -.181 -1.147 Z','#3b3930',dark);
+  figureShape('M-.169 -1.19 Q-.181 -1.225 -.153 -1.226 Q-.127 -1.222 -.136 -1.189 Q-.144 -1.171 -.159 -1.177',skin,dark,.009);
+  figureShape('M-.259 -1.262 Q-.287 -1.28 -.276 -1.317 Q-.26 -1.355 -.225 -1.34 Q-.191 -1.316 -.211 -1.278 Q-.229 -1.254 -.259 -1.262 Z','#444135',dark);
+  figureShape('M-.057 -1.238 Q-.035 -1.249 -.012 -1.239',null,'#604a37',.007);
   const lid='M-.048 -1.200 C-.032 -1.209 -.020 -1.217 -.009 -1.214 Q.002 -1.213 .007 -1.202';
-  shape(lid+' Q.004 -1.190 -.008 -1.189 C-.021 -1.188 -.035 -1.196 -.048 -1.200 Z','#fcf4de','#98795e',.003);
+  figureShape(lid+' Q.004 -1.190 -.008 -1.189 C-.021 -1.188 -.035 -1.196 -.048 -1.200 Z','#fcf4de','#98795e',.003);
   ctx.beginPath();ctx.ellipse(-.003,-1.201,.0073,.0092,0,0,Math.PI*2);ctx.fillStyle='#678375';ctx.fill();
   ctx.beginPath();ctx.ellipse(-.001,-1.201,.0035,.0063,0,0,Math.PI*2);ctx.fillStyle=dark;ctx.fill();
-  shape(lid,null,'#534b3b',.004);
-  shape('M-.029 -1.126 Q-.011 -1.121 .004 -1.127',null,'#8b5d46',.005);
-  shape('M-.158 -1.212 Q-.143 -1.216 -.148 -1.20 L-.155 -1.194',null,'#9a6b4d',.004);
-  ctx.restore();ctx.restore();
+  figureShape(lid,null,'#534b3b',.004);
+  figureShape('M-.029 -1.126 Q-.011 -1.121 .004 -1.127',null,'#8b5d46',.005);
+  figureShape('M-.158 -1.212 Q-.143 -1.216 -.148 -1.20 L-.155 -1.194',null,'#9a6b4d',.004);
+  ctx.restore();
 }
 function roomProjection(m) {
   const w=m.room.width,d=m.room.depth,h=config.roomH,kx=.61,ky=.245;
@@ -506,10 +517,10 @@ function roomScene(m,t){
   const base=P(m.seat,0,0),eye=P(m.eye,0,m.eyeZ);
   ellipse([base[0]-.10*s,base[1]+.01*s],.55*s,.12*s,'rgba(64,79,60,.14)',-.10);
   if(!m.onlyRoof)panel(P,m);
-  const fanR=within(s*.58,19,44);
-  fan(eye,fanR,m);
   const foreground=[];
-  desk(P,s,m,true,foreground);chair(P,m,true,foreground);personInRoom(P,s,m,foreground);
+  desk(P,s,m,true,foreground);chair(P,m,true,foreground);seatedBodyInRoom(P,s,m,foreground);
+  fan(eye,within(s*.58,19,44),m);
+  seatedHead(base,s,m);
   drawEyePaths(P,s,m,t);
   const lamp=P(m.lamp,0,config.lampH),right=P(d,-config.wallY/2,config.wallHi);
   if(!m.onlyRoof){

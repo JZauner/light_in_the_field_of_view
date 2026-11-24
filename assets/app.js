@@ -264,23 +264,30 @@ function placeSettingHint(){
   activeSettingHint.classList.toggle('below',card.getBoundingClientRect().top<activeSettingHint.offsetHeight+6);
 }
 function installSettingHints(){
-  for(const button of el('settings').querySelectorAll('.lock-help')){
-    const card=button.closest('.parameter'),hint=el(button.getAttribute('aria-describedby'));
+  const source=el('wall-source');
+  for(const trigger of el('settings').querySelectorAll('.lock-help, #wall-source')){
+    const card=trigger.closest('.parameter'),hint=card.querySelector('[role="tooltip"]');
+    const retainedFocus=trigger===source?':focus':':focus-visible';
     function show(){
-      if(button.hidden)return;
+      if(trigger.hidden||(trigger===source&&source.value!=='off'))return;
       if(activeSettingHint!==hint)closeSettingHint();
       activeSettingHint=hint;hint.hidden=false;placeSettingHint();
     }
-    button.addEventListener('pointerenter',event=>{if(event.pointerType!=='touch')show();});
+    function hide(){if(activeSettingHint===hint)closeSettingHint();}
+    trigger.addEventListener('pointerenter',event=>{if(event.pointerType!=='touch')show();});
     card.addEventListener('pointerleave',event=>{
-      if(event.pointerType!=='touch'&&activeSettingHint===hint&&!button.matches(':focus-visible'))closeSettingHint();
+      if(event.pointerType!=='touch'&&!trigger.matches(retainedFocus))hide();
     });
-    button.addEventListener('focus',()=>{if(button.matches(':focus-visible'))show();});
-    button.addEventListener('blur',()=>{if(activeSettingHint===hint)closeSettingHint();});
-    button.addEventListener('click',event=>{
-      if(event.pointerType==='touch'&&activeSettingHint===hint)closeSettingHint();
-      else show();
-    });
+    trigger.addEventListener('focus',()=>{if(trigger.matches(':focus-visible'))show();});
+    trigger.addEventListener('blur',hide);
+    if(trigger===source){
+      source.addEventListener('change',()=>{if(source.value==='off')show();else hide();});
+    }else{
+      trigger.addEventListener('click',event=>{
+        if(event.pointerType==='touch'&&activeSettingHint===hint)hide();
+        else show();
+      });
+    }
   }
   document.addEventListener('pointerdown',event=>{
     if(activeSettingHint&&!activeSettingHint.closest('.parameter').contains(event.target))closeSettingHint();
@@ -382,6 +389,8 @@ function syncSettings(state){
   el('eye-height').textContent=tr('Augenhöhe {height} m',{height:heightText(pitch.eyeZ)});
   el('ceiling-height').textContent=tr('Raumhöhe {height} m',{height:heightText(config.roomH)});
   el('wall-source').value=state.source;
+  el('wall-source').setAttribute('aria-describedby',off?'window-note hint-source':'window-note help-mix');
+  if(!off&&activeSettingHint===el('hint-source'))closeSettingHint();
   el('window-note').textContent=tr(off?'Glasfläche':state.source==='window'?'Brüstung auf Tischhöhe':'Unterkante auf Tischhöhe');
   const ends=parameterCards.mix.querySelector('.slider-ends');
   ends.firstElementChild.textContent=tr(state.source==='window'?'Tageslicht':'Stirnwand');
@@ -560,6 +569,9 @@ function chapterLabels(){
   el('help-mix').textContent=tr(chapter===4
     ? 'Hier bleibt die Leuchtdichte der gesamten Decke konstant. Das Fenster oder Wandpanel liefert zusätzlichen Lichtstrom. Schaltest du die Lichtquelle an der Stirnwand aus, entfällt dieser Beitrag.'
     : 'Die Summe der Lichtströme von Deckenpanel und Stirnwand (Fenster oder Wandpanel) bleibt gleich. Schaltest du die Lichtquelle an der Stirnwand aus, übernimmt das Deckenpanel ihren Anteil. Die Beleuchtungsstärke am Auge kann sich dabei ändern.');
+  el('hint-source').textContent=tr(chapter===4
+    ? 'Der Lichtstrom des Fensters oder Wandpanels fällt jetzt weg. Die Leuchtdichte der Decke bleibt gleich, deshalb sinkt hier der Gesamtlichtstrom.'
+    : 'Das Deckenpanel übernimmt jetzt den Anteil des Fensters oder Wandpanels. Der Gesamtlichtstrom im Raum bleibt gleich. Die Beleuchtungsstärke am Auge kann sich dabei ändern.');
 }
 function go(index,{initial=false}={}) {
   if(index<0||index>=chapters.length)return;

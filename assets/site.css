@@ -132,8 +132,8 @@ dialog{width:min(680px,calc(100% - 28px));max-height:min(86dvh,800px);padding:0;
   }
 }
 .parameter-detail{display:block;margin-top:2px;color:#53685b;font:400 11px/1.2 var(--sans);font-variant-numeric:tabular-nums}
-#hint-mix{inset:auto 4px calc(100% - 3px) auto;transform:none;width:42ch;max-width:calc(100vw - 40px)}
-#hint-mix.below{top:calc(100% - 3px);bottom:auto}
+#hint-mix,#hint-source{inset:auto 4px calc(100% - 3px) auto;transform:none;width:42ch;max-width:calc(100vw - 40px)}
+#hint-mix.below,#hint-source.below{top:calc(100% - 3px);bottom:auto}
 #mix-availability:not([hidden]){display:block;margin-top:.5em}
 .fixed-parameter{background:#eff1e9}
 .fixed-parameter .parameter-picture{filter:grayscale(.88);opacity:.84;border-color:#c4cbbd}
@@ -167,7 +167,8 @@ dialog{width:min(680px,calc(100% - 28px));max-height:min(86dvh,800px);padding:0;
 .rail-foot .material-grid label{gap:6px;font-size:13px}
 .rail-foot select{padding:3px}.rail-foot select:disabled{color:#667064;background:#edf0e8}
 .rail-foot .glass-row{justify-content:start;gap:12px}
-.material-help,#materials-off{max-width:88ch;margin:6px 0;color:var(--sub);font-size:12px;line-height:1.4}
+.material-help,#materials-off{margin:6px 0;color:var(--sub);font-size:12px;line-height:1.4}
+#materials-off{max-width:88ch}
 .rail-foot .lab-tools{display:flex;align-items:center;justify-content:end;gap:5px 12px;margin:0}
 .rail-foot .saved-output{flex-basis:100%;max-width:38ch;text-align:right;margin:0;font-size:12px}
 .scene-play{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:5px 6px;container:experiment-actions / inline-size}

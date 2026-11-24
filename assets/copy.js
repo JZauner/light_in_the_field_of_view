@@ -6,7 +6,13 @@ const staticKeys=["Ein interaktives Raummodell zur Gesichtsfeldeinschränkung be
   "Code und Materialien Dritter",
   "Für den ursprünglichen Programmcode gilt BSD with Attribution. Die Schriften stehen unter der SIL Open Font License 1.1, die Bibliothek pako unter der MIT-Lizenz.",
   "Bei den Gesichtsfeldkurven und Abbildungsausschnitten aus der Studie von 2023 gehören alle drei Namen in die Quellenangabe.",
-  "Vollständige Lizenz und Hinweise herunterladen"
+  "Vollständige Lizenz und Hinweise herunterladen",
+  "KI-Einsatz",
+  "Erklärung zum Einsatz generativer KI",
+  "Bei der Entwicklung von Licht im Gesichtsfeld setzte der Autor Codex (OpenAI) ein, um die Software zu entwickeln und zu testen, interaktive Abbildungen und Animationen zu erstellen sowie die deutschen und englischen Texte zu verfassen und zu überarbeiten.",
+  "Der Autor legte die Lernziele und Versuchsszenarien fest, prüfte die mit KI-Unterstützung erstellten Materialien und trägt die Verantwortung für die veröffentlichten Inhalte einschließlich der wissenschaftlichen Interpretation der Modellergebnisse.",
+  "KI-Modell",
+  "Reasoning-Stufe"
 ];
 const uiCopy={
   "Ein interaktives Raummodell zur Gesichtsfeldeinschränkung bei der Lichtmessung. Fünf Versuche und ein freies Experiment für den Vortrag oder zum eigenen Erkunden.": "Explore how the field of view affects light measurements at the eye. Five guided experiments and an open lab in an interactive model room.",
@@ -441,5 +447,11 @@ const uiCopy={
   "Code und Materialien Dritter": "Code and third-party material",
   "Für den ursprünglichen Programmcode gilt BSD with Attribution. Die Schriften stehen unter der SIL Open Font License 1.1, die Bibliothek pako unter der MIT-Lizenz.": "The original code uses BSD with Attribution. The fonts use the SIL Open Font License 1.1 and the pako library uses the MIT license.",
   "Bei den Gesichtsfeldkurven und Abbildungsausschnitten aus der Studie von 2023 gehören alle drei Namen in die Quellenangabe.": "When reusing the visual-field curves or figure excerpts from the 2023 study, credit all three authors.",
-  "Vollständige Lizenz und Hinweise herunterladen": "Download the full license and notices"
+  "Vollständige Lizenz und Hinweise herunterladen": "Download the full license and notices",
+  "KI-Einsatz": "AI use",
+  "Erklärung zum Einsatz generativer KI": "Declaration of generative AI use",
+  "Bei der Entwicklung von Licht im Gesichtsfeld setzte der Autor Codex (OpenAI) ein, um die Software zu entwickeln und zu testen, interaktive Abbildungen und Animationen zu erstellen sowie die deutschen und englischen Texte zu verfassen und zu überarbeiten.": "The author used Codex (OpenAI) to assist with software development and testing, the creation of interactive figures and animations, and the drafting and revision of the English and German texts for Light in the field of view.",
+  "Der Autor legte die Lernziele und Versuchsszenarien fest, prüfte die mit KI-Unterstützung erstellten Materialien und trägt die Verantwortung für die veröffentlichten Inhalte einschließlich der wissenschaftlichen Interpretation der Modellergebnisse.": "The author defined the learning objectives and experimental scenarios, reviewed the AI-assisted material and takes responsibility for the published content, including the scientific interpretation of the model results.",
+  "KI-Modell": "AI model",
+  "Reasoning-Stufe": "Reasoning level"
 };

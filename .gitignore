@@ -1,0 +1,24 @@
+# Publish the static web edition and its linked downloads.
+*
+!.gitignore
+!.nojekyll
+!/index.html
+!/intro-eyes.html
+!/intro-meter.html
+!/author.html
+!/assets/
+!/assets/*.js
+!/assets/*.css
+!/assets/data/
+!/assets/data/model.js
+!/assets/data/room-*.js
+!/assets/figures/
+!/assets/figures/mark.svg
+!/assets/figures/aufsatz.png
+!/assets/figures/schema.png
+!/assets/fonts/
+!/assets/fonts/*.woff2
+!/assets/fonts/*-LICENSE.txt
+!/assets/model/
+!/assets/model/modell.R
+!/assets/model/pfadpruefung.R

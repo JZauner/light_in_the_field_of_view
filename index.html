@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Dr. Johannes Zauner">
+<meta name="theme-color" content="#f8f7f1">
+<meta name="description" content="Explore how the field of view affects light measurements at the eye. Five guided experiments and an open lab in an interactive model room." data-copy="content=0">
+<title data-copy="t=1">Light in the field of view · Interactive room model</title>
+<link rel="stylesheet" href="assets/site.css?v=65cf53905ba7">
+<link rel="stylesheet" href="assets/intro.css?v=8257a672d0e4">
+</head>
+<body data-edition="web">
+<a class="skip" href="#main" data-copy="t=2">Skip to experiment</a>
+<header class="site-head shell">
+  <a class="brand" data-intro-home href="#en/intro"><canvas id="mark" width="88" height="88" aria-hidden="true"></canvas><span data-copy="t=3">Light in the field of view</span></a>
+  <div class="head-actions">
+    <a class="bare intro-menu-link" data-intro-home href="#en/intro" hidden>Introduction</a>
+    <nav class="language-switch" aria-label="Choose language" data-copy="aria-label=4"><a href="#en" hreflang="en" lang="en" aria-label="English" data-language="en" aria-current="true">EN</a><a href="#de" hreflang="de" lang="de" aria-label="Deutsch" data-language="de">DE</a></nav>
+    <button id="show-info" class="bare" aria-haspopup="dialog" aria-controls="info-dialog" data-copy="aria-label=220" aria-label="About"><span class="info-icon" aria-hidden="true">i</span><span class="action-label" data-copy="t=5">About</span></button>
+    <button id="fullscreen" class="bare" aria-label="Enter full screen" data-copy="aria-label=7"><span class="expand-icon" aria-hidden="true"></span><span class="full-label" data-copy="t=8">Full screen</span></button>
+  </div>
+</header>
+<p id="fullscreen-status" role="status" hidden></p>
+<main id="guide-page" class="shell" aria-labelledby="guide-title" hidden></main>
+<div class="nav-wrap" hidden><nav class="shell chapter-nav" aria-label="Choose an experiment" id="chapter-nav" data-copy="aria-label=9"></nav></div>
+<main id="main" class="shell" hidden>
+  <div class="intro"><h1 id="headline" tabindex="-1" data-copy="t=10">What does a sensor at the eye measure?</h1><p id="intro-text" data-copy="t=230">Compare readings with the sensor open and with a radiance hood fitted. Tilt the gaze to see which light reaches the eye.</p></div>
+  <div id="data-status" class="data-status" role="status" hidden><span></span> <button id="retry-data" class="text-link" type="button" hidden data-copy="t=12">Try again</button></div>
+  <div class="studio">
+    <div class="visual-column"><figure class="board" aria-labelledby="board-caption">
+      <div class="board-top">
+        <div class="view-tabs" role="group" aria-label="Choose a view" data-copy="aria-label=13">
+          <button id="room-view" aria-pressed="true" data-copy="p0=14"><span aria-hidden="true" class="view-symbol">◇</span>Room view</button>
+          <button id="cut-view" aria-pressed="false" data-copy="p0=15"><span aria-hidden="true" class="view-symbol">∠</span>Section view</button>
+          <button id="sensor-view" aria-pressed="false" data-copy="p0=16"><span aria-hidden="true" class="view-symbol">◉</span>Sensor view</button>
+        </div>
+        <label class="ray-toggle" id="ray-control"><input id="rays" type="checkbox" checked><span class="switch" aria-hidden="true"></span><span id="rays-label" data-copy="t=17">Light paths</span></label>
+      </div>
+      <div class="drawing" id="drawing"><canvas id="scene" role="img" aria-describedby="scene-description" aria-label="Interactive room section showing the sensor at the eye, light sources and incoming light" data-copy="aria-label=18"></canvas><div class="gaze-surface"><svg class="gaze-layer" id="gaze-layer" hidden><g id="gaze-control" tabindex="0" role="slider" aria-label="Gaze angle at the arrowhead" aria-orientation="vertical" aria-valuemin="-45" aria-valuemax="30" aria-valuenow="0" data-copy="aria-label=19">
+          <title data-copy="t=20">Drag the arrowhead up or down to tilt the gaze</title>
+          <g id="gaze-tip"><circle class="gaze-padding" r="18"></circle><path class="gaze-arrow" d="M-8 0H0 M-7 -4.5 0 0 -7 4.5"></path></g>
+        </g></svg></div><button id="lens" class="lens" aria-label="Enlarge sensor view" hidden data-copy="aria-label=21"><canvas id="lens-preview" width="160" height="160" aria-hidden="true"></canvas><span data-copy="t=22">Sensor view ↗</span></button></div>
+      <div class="probe-control" id="probe-control" hidden><div><label for="probe-angle" data-copy="t=23">Rotate the test ray</label><output id="probe-result" for="probe-angle"></output></div><input id="probe-angle" type="range" min="-90" max="90" step="1" value="60"><p data-copy="t=24">Rotate the ray relative to the line of sight to test which angles the sensor accepts.</p></div>
+      <p id="scene-description" class="sr"></p>
+      <div class="legend" id="legend" aria-label="Diagram key" data-copy="aria-label=25"><span id="pass-legend" data-copy="p0=26"><i class="key pass" aria-hidden="true"></i>detected</span><span><i class="key stop" aria-hidden="true"></i><span id="stop-key-label" data-copy="t=27">blocked</span></span><span id="gaze-legend"><i class="key gaze" aria-hidden="true"></i><span id="gaze-key-label" data-copy="t=28">drag the arrowhead</span></span><span id="bounce-legend" hidden data-copy="p0=29"><i class="key bounce" aria-hidden="true"></i>reflection point</span></div>
+      <figcaption id="board-caption"></figcaption>
+    </figure></div>
+    <aside class="controls" id="controls" aria-label="Measurement result" data-copy="aria-label=30">
+      <section class="result" id="result-section" aria-labelledby="result-title">
+        <div class="result-head"><h2 id="result-title" data-copy="t=31">Light detected</h2><span class="model-tag" data-copy="t=32">Model</span></div>
+        <div class="readout"><span id="percent">–</span><span class="unit" id="percent-unit">%</span></div>
+        <div class="meter" id="ratio-meter" aria-hidden="true"><i id="meter-fill"></i></div>
+        <p id="ratio-note" data-copy="t=33">Share of the open reading at this position.</p>
+        <div class="index-pair" aria-label="Calculated illuminance at the eye in lux" data-copy="aria-label=34"><div data-copy="t=35">Open <b id="open-index">0 lx</b></div><div><span id="selected-label" data-copy="t=83">With hood</span> <b id="chosen-index">0 lx</b></div></div>
+        <p id="transport-split" data-copy="t=38 p0=39">Direct <b id="value-direct">0 lx</b> · Reflected <b id="value-indirect">0 lx</b></p>
+        <div class="calibration"><label for="reference-lux" data-copy="t=40">Reference in experiment 01</label><div class="reference-input"><input id="reference-lux" type="number" inputmode="decimal" step="any" min="0" value="250" aria-describedby="reference-help reference-error"><span>lx</span></div></div>
+        <p id="reference-error" hidden data-copy="t=42">Enter a positive, finite value in lux.</p>
+        <details id="indices"><summary data-copy="t=43">How is the reading calculated?</summary><p data-copy="t=44">The model calculates illuminance at the eye with the sensor open and with the selected attachment fitted. A bright patch contributes more than a dark one. Distance, the orientation of the patch and the angle at which light strikes the sensor also matter. The percentage is the reading with the attachment divided by the open reading for the same gaze direction.</p><p id="reference-help" data-copy="t=45">The reference sets the light level throughout the model. It is the open reading at the starting position in experiment 01, looking straight ahead with reflections on. The default is 250 lx. Changing it scales the illuminance readings in every experiment by the same factor. The percentages stay the same.</p></details>
+      </section>
+      <div class="scene-play"><button id="play" class="action play-button"><span class="play-icon" aria-hidden="true"></span><span id="play-label" data-copy="t=58">Play experiment</span></button>
+        <div class="nav-actions"><button id="prev" class="action prev" aria-label="Previous experiment" title="Previous experiment (left arrow)" data-copy="aria-label=59 title=60">←</button><button id="next" class="action next" title="Next experiment" data-copy="title=61"><span id="next-label" data-copy="t=62">Seating position</span><span class="next-short" aria-hidden="true" data-copy="t=231">Next</span><span aria-hidden="true">→</span></button></div>
+        <span id="play-status" class="play-status"></span></div>
+    </aside>
+    <section class="parameters" aria-labelledby="settings-heading">
+      <header class="rail-header"><h2 id="settings-heading" data-copy="t=221">Room settings</h2>
+        <span class="rail-key" id="fixed-key"><i class="lock-symbol" aria-hidden="true"></i><span data-copy="t=199">Fixed in this experiment</span></span>
+        <button id="reset" type="button" class="icon-button" aria-label="Reset this experiment" title="Reset this experiment" data-copy="aria-label=47 title=47">↺</button></header>
+      <div class="parameter-grid" id="settings">
+        <div class="parameter-set" role="group" aria-label="Adjustable in every experiment" data-copy="aria-label=228">
+          <div class="parameter" data-setting="mask" role="group" aria-labelledby="label-mask">
+            <div class="parameter-head"><svg class="parameter-picture" id="preview-mask" viewBox="0 0 90 80" aria-hidden="true" focusable="false"></svg><div class="parameter-description">
+              <h3 id="label-mask" data-copy="t=227">Field-of-view restriction</h3><span class="parameter-value" id="value-mask"></span></div>
+              <span class="fixed-mark" hidden><i class="lock-symbol" aria-hidden="true"></i><span class="sr" data-copy="t=199">Fixed in this experiment</span></span></div>
+            <fieldset class="mask-options"><legend class="sr" data-copy="t=197">Measurement geometry</legend>
+              <div class="mask-segments">
+                <label class="mask-choice" title="Open measurement" data-copy="title=96"><input type="radio" name="mask" value="0" aria-label="Open measurement" data-copy="aria-label=96"><span data-copy="t=35">Open</span></label>
+                <label class="mask-choice" title="Upper shading disc" hidden data-copy="title=98"><input type="radio" name="mask" value="1" aria-label="Upper shading disc" data-copy="aria-label=98" disabled><span data-copy="t=195">Disc</span></label>
+                <label class="mask-choice" title="Radiance hood" data-copy="title=100"><input type="radio" name="mask" value="2" aria-label="Radiance hood" data-copy="aria-label=100" checked><span data-copy="t=196">Radiance hood</span></label>
+              </div>
+            </fieldset>
+          </div>
+          <div class="parameter" data-setting="tilt" role="group" aria-labelledby="label-tilt">
+            <div class="parameter-head"><canvas class="parameter-picture" id="pose-preview" width="216" height="192" aria-hidden="true" title="Drag to tilt the gaze" data-copy="title=207"></canvas><div class="parameter-description">
+              <label for="range-tilt" id="label-tilt" data-copy="t=208">Gaze angle</label><output id="value-tilt" for="range-tilt"></output><small id="eye-height" class="parameter-detail">Eye height 1.20 m</small></div>
+              <span class="fixed-mark" hidden><i class="lock-symbol" aria-hidden="true"></i><span class="sr" data-copy="t=199">Fixed in this experiment</span></span></div>
+            <div class="slider-line"><input id="range-tilt" type="range" min="0" max="1" step="1" aria-describedby="help-tilt eye-height">
+              <div class="slider-ends" aria-hidden="true"><span data-copy="t=204">−45° · down</span><span data-copy="t=205">+30° · up</span></div></div><span class="sr" id="help-tilt" data-copy="t=206">Angle from horizontal. The sensor and any attachment follow the eye.</span>
+          </div>
+          <div class="parameter" data-setting="reflect" role="group" aria-labelledby="label-reflect">
+            <div class="parameter-head"><canvas class="parameter-picture" id="preview-reflect" width="216" height="192" aria-hidden="true"></canvas><div class="parameter-description">
+              <h3 id="label-reflect" data-copy="t=53">Reflections</h3><span class="parameter-value" id="value-reflect"></span></div>
+              <span class="fixed-mark" hidden><i class="lock-symbol" aria-hidden="true"></i><span class="sr" data-copy="t=199">Fixed in this experiment</span></span></div>
+            <label class="reflection-switch"><input id="reflection-toggle" type="checkbox" checked aria-labelledby="label-reflect"><span class="switch" aria-hidden="true"></span><span id="reflection-state"></span></label>
+          </div>
+          <div class="parameter" data-setting="source" role="group" aria-labelledby="label-source">
+            <div class="parameter-head"><canvas class="parameter-picture" id="preview-source" width="216" height="192" aria-hidden="true"></canvas><div class="parameter-description">
+              <label for="wall-source" id="label-source" data-copy="t=48">Front wall light</label><span class="parameter-value" id="window-note"></span></div>
+              <span class="fixed-mark" hidden><i class="lock-symbol" aria-hidden="true"></i><span class="sr" data-copy="t=199">Fixed in this experiment</span></span></div>
+            <select id="wall-source" aria-describedby="window-note">
+              <option value="off" data-copy="t=49">Off</option><option value="panel" data-copy="t=50">Wall panel</option><option value="window" data-copy="t=51">Diffuse daylight</option></select>
+          </div>
+        </div>
+        <div class="parameter-set" role="group" aria-label="Experiment-specific settings" data-copy="aria-label=229">
+          <div class="parameter" data-setting="eye" role="group" aria-labelledby="label-eye">
+            <div class="parameter-head"><canvas class="parameter-picture" id="preview-eye" width="216" height="192" aria-hidden="true"></canvas><div class="parameter-description">
+              <label for="range-eye" id="label-eye" data-copy="t=203">Seating position</label><output id="value-eye" for="range-eye"></output></div>
+              <button type="button" class="fixed-mark lock-help" aria-labelledby="label-eye fixed-eye" aria-describedby="hint-eye" hidden><i class="lock-symbol" aria-hidden="true"></i><span id="fixed-eye" class="sr" data-copy="t=199">Fixed in this experiment</span></button>
+              <span id="hint-eye" class="setting-hint" role="tooltip" hidden></span></div>
+            <div class="slider-line"><input id="range-eye" type="range" min="0" max="1" step="1" aria-describedby="help-eye">
+              <div class="slider-ends" aria-hidden="true"><span data-copy="t=200">Rear wall</span><span data-copy="t=201">Front wall</span></div></div><span class="sr" id="help-eye" data-copy="t=202">Seat distance from the rear wall. The desk and chair move together.</span>
+          </div>
+          <div class="parameter" data-setting="mix" role="group" aria-labelledby="label-mix">
+            <div class="parameter-head"><canvas class="parameter-picture" id="preview-mix" width="216" height="192" aria-hidden="true"></canvas><div class="parameter-description">
+              <label for="range-mix" id="label-mix" data-copy="t=219">Light distribution</label><output id="value-mix" for="range-mix"></output></div>
+              <button type="button" class="fixed-mark lock-help" aria-labelledby="label-mix fixed-mix" aria-describedby="hint-mix" hidden><i class="lock-symbol" aria-hidden="true"></i><span id="fixed-mix" class="sr" data-copy="t=199">Fixed in this experiment</span></button>
+              <span id="hint-mix" class="setting-hint" role="tooltip" hidden></span></div>
+            <div class="slider-line"><input id="range-mix" type="range" min="0" max="1" step="1" aria-describedby="help-mix">
+              <div class="slider-ends" aria-hidden="true"><span data-copy="t=201">Front wall</span><span data-copy="t=216">Ceiling</span></div></div><p class="fixed-explanation" hidden data-copy="t=217">Constant ceiling luminance</p><span class="sr" id="help-mix" data-copy="t=218">The slider shows the share of luminous flux from the ceiling. With the front wall light off, the ceiling supplies 100%.</span>
+          </div>
+          <div class="parameter" data-setting="lamp" role="group" aria-labelledby="label-lamp">
+            <div class="parameter-head"><canvas class="parameter-picture" id="preview-lamp" width="216" height="192" aria-hidden="true"></canvas><div class="parameter-description">
+              <label for="range-lamp" id="label-lamp" data-copy="t=215">Panel position</label><output id="value-lamp" for="range-lamp"></output></div>
+              <button type="button" class="fixed-mark lock-help" aria-labelledby="label-lamp fixed-lamp" aria-describedby="hint-lamp" hidden><i class="lock-symbol" aria-hidden="true"></i><span id="fixed-lamp" class="sr" data-copy="t=199">Fixed in this experiment</span></button>
+              <span id="hint-lamp" class="setting-hint" role="tooltip" hidden></span></div>
+            <div class="slider-line"><input id="range-lamp" type="range" min="0" max="1" step="1" aria-describedby="help-lamp">
+              <div class="slider-ends" aria-hidden="true"><span data-copy="t=200">Rear wall</span><span data-copy="t=201">Front wall</span></div></div><p class="fixed-explanation" hidden data-copy="t=213">The entire ceiling emits light.</p><span class="sr" id="help-lamp" data-copy="t=214">Distance from the rear wall to the centre of the 1.20 m ceiling panel.</span>
+          </div>
+          <div class="parameter" data-setting="size" role="group" aria-labelledby="label-size">
+            <div class="parameter-head"><canvas class="parameter-picture" id="preview-size" width="216" height="192" aria-hidden="true"></canvas><div class="parameter-description">
+              <label for="range-size" id="label-size" data-copy="t=212">Room size</label><output id="value-size" for="range-size"></output><small id="ceiling-height" class="parameter-detail">Ceiling height 2.80 m</small></div>
+              <button type="button" class="fixed-mark lock-help" aria-labelledby="label-size fixed-size" aria-describedby="hint-size" hidden><i class="lock-symbol" aria-hidden="true"></i><span id="fixed-size" class="sr" data-copy="t=199">Fixed in this experiment</span></button>
+              <span id="hint-size" class="setting-hint" role="tooltip" hidden></span></div>
+            <div class="slider-line"><input id="range-size" type="range" min="0" max="1" step="1" aria-describedby="help-size ceiling-height">
+              <div class="slider-ends" aria-hidden="true"><span data-copy="t=209">Small</span><span data-copy="t=210">Large</span></div></div><span class="sr" id="help-size" data-copy="t=211">Width and depth of the room.</span>
+          </div>
+        </div>
+      </div>
+      <div class="rail-foot">
+        <details id="material-settings"><summary data-copy="t=54">Adjust surface reflectance</summary>
+          <div id="material-grid" class="material-grid"></div><div class="glass-row"><span data-copy="t=55">Glass surface</span><strong data-copy="t=56">8% · fixed</strong></div>
+          <p class="material-help" data-copy="t=57">The floor, walls, ceiling and desk scatter reflected light in many directions. The glass on the front wall produces a mirror-like reflection even when its light source is off.</p>
+          <p id="materials-off" hidden data-copy="t=222">Turn on reflections to change the surface reflectance.</p></details>
+        <div class="lab-tools" id="lab-tools" hidden><button id="pin" type="button" data-copy="t=223">Save setting</button><button id="restore" type="button" hidden data-copy="t=224">Restore</button><p id="saved-note" class="saved-output"></p></div>
+      </div>
+    </section>
+  </div>
+  <p id="announcement" class="sr" aria-live="polite" aria-atomic="true"></p>
+  
+</main>
+<main id="author-page" class="shell author-page" hidden>
+  <article aria-labelledby="author-heading">
+    <a class="author-back" data-back-link="" href="index.html#en" data-copy="t=65">← Back to the experiments</a>
+    <h1 id="author-heading" class="sr" data-copy="t=63">About the author</h1>
+    <p id="author-bio" class="author-bio" tabindex="-1" data-copy="t=67">Johannes Zauner is a human biologist and lighting designer. He studies how much light reaches the eye in everyday life and how to measure that exposure.</p>
+    <p data-copy="t=68">He is a postdoctoral researcher in the Translational Sensory and Circadian Neuroscience Unit (MPI / TUM / TUMCREATE) at the Technical University of Munich.</p>
+    <p class="author-identifier"><a href="https://orcid.org/0000-0003-2171-4566" rel="me">ORCID iD <strong>0000-0003-2171-4566</strong></a></p>
+    <section class="author-study"><h2 data-copy="t=70">The study behind the demonstrator</h2>
+    <p data-copy="t=71">Together with Kai Broszio and Karin Bieske, he investigated how indoor light measurements change when a radiance hood limits the sensor to the human field of view.</p>
+    <a href="https://doi.org/10.3390/clockssleep5030032" data-copy="t=72">Zauner, Broszio &amp; Bieske (2023) · Read the paper</a></section>
+    <p class="author-affiliation"><a href="https://tscnlab.org/" data-copy="t=73">TSCN research group website</a></p>
+  </article>
+</main>
+<dialog id="info-dialog" aria-labelledby="dialog-title">
+  <div class="dialog-head"><h2 id="dialog-title" data-copy="t=5">About</h2><button class="icon-button close" id="close-dialog" aria-label="Close" data-copy="aria-label=74">×</button></div>
+  <div class="dialog-tabs" role="tablist" aria-label="Choose a topic" data-copy="aria-label=75"><button type="button" id="tab-model" role="tab" data-pane="model" aria-controls="info-model" aria-selected="true" tabindex="0" data-copy="t=77">Model</button><button type="button" id="tab-case" role="tab" data-pane="case" aria-controls="info-case" aria-selected="false" tabindex="-1" data-copy="t=76">Classroom study</button><button type="button" id="tab-disc" role="tab" data-pane="disc" aria-controls="info-disc" aria-selected="false" tabindex="-1" data-copy="t=232">Shading disc</button><button type="button" id="tab-sources" role="tab" data-pane="sources" aria-controls="info-sources" aria-selected="false" tabindex="-1" data-copy="t=78">Sources</button><button type="button" id="tab-author" role="tab" data-pane="author" aria-controls="info-author" aria-selected="false" tabindex="-1" data-copy="t=225">Author</button></div>
+  <div class="dialog-body">
+    <section role="tabpanel" id="info-case" aria-labelledby="tab-case" data-content="case" hidden tabindex="0">
+      <h3 data-copy="t=79">Two lighting scenes in the same classroom</h3>
+      <p data-copy="t=80">A spectrometer measured light at eye level in a classroom. Panels supplied most of the light in the morning. Spotlights made a larger contribution in the evening. Each scene was measured twice, first with an open sensor and then with a radiance hood.</p>
+      <table><caption data-copy="t=81">Melanopic EDI measured at the eye</caption><thead><tr><th scope="col" data-copy="t=82">Lighting scene</th><th scope="col" data-copy="t=35">Open</th><th scope="col" data-copy="t=83">With hood</th></tr></thead><tbody><tr><th scope="row" data-copy="t=84">Morning</th><td>242 lx</td><td>215 lx</td></tr><tr><th scope="row" data-copy="t=87">Evening</th><td>54 lx</td><td>31 lx</td></tr></tbody></table>
+      <p data-copy="t=90">The hood reduced the morning reading by 11% and the evening reading by 43%. Even in the same room, the lighting scene changes which directions contribute to the reading. <a href="https://doi.org/10.3390/clockssleep5030032" target="_blank" rel="noopener noreferrer" data-copy="t=91">Zauner et al. (2023), Fig. 4, scenes 11 and 13</a></p>
+      <p class="fine" data-copy="t=92">Melanopic equivalent daylight illuminance (melanopic EDI) is the illuminance of standard daylight D65 that would produce the same melanopic stimulus. The percentages in the interactive room come from the geometric teaching model.</p>
+    </section>
+    <section role="tabpanel" id="info-model" aria-labelledby="tab-model" data-content="model" hidden tabindex="0">
+      <a class="guide-model-link" data-intro-home data-intro-label href="#en/intro">Guided introduction</a>
+      <h3 data-copy="t=93">What determines the reading?</h3>
+      <p data-copy="t=94">When the person looks straight ahead, the sensor at the eye sits 1.20 m above the floor. Negative angles tilt the gaze towards the desk, positive angles towards the ceiling. As the person nods, the neck moves at the shoulders and the head tilts at the top of the neck. The eye shifts slightly in space. The sensor and any attachment follow the eye. The figure uses a simplified model of this movement.</p>
+      <p data-copy="t=95">Each surface patch in front of the sensor contributes according to its luminance, apparent size and angle of incidence. Light that strikes the sensor at a grazing angle contributes less.</p>
+      <dl><dt data-copy="t=96">Open measurement</dt><dd data-copy="t=97">In a hemispherical measurement the sensor accepts light from the forward hemisphere, extending 90° to either side. Straight ahead is 0° elevation.</dd>
+      <dt data-copy="t=100">Radiance hood</dt><dd data-copy="t=101">CIE S 026/E:2018 uses the term “radiance hood” for a baffle fitted over a sensor. It blocks light from outside the chosen field of view. Annex A.6, Table A.4 gives typical limits for low light levels indoors. They extend vertically from −70° to +50°. Horizontally, the combined field of both eyes spans 180°. These angles are relative to the current line of sight. The model follows Figure 1b of Zauner et al. for the lateral outline. Two horizontal lines bound the field in the equidistant angular diagram. This idealised boundary applies to both direct and reflected light. Figure 6d shows the slightly curved opening of the physical attachment, which accounts for shading across the entire diffuser. <a href="https://cie.co.at/publications/cie-system-metrology-optical-radiation-iprgc-influenced-responses-light-0" target="_blank" rel="noopener noreferrer" data-copy="t=102">CIE S 026/E:2018, Annex A.6</a> · <a href="https://www.mdpi.com/2624-5175/5/3/32" target="_blank" rel="noopener noreferrer" data-copy="t=103">Zauner et al. (2023), Figs. 1b and 6d</a></dd></dl>
+      <details class="technical"><summary data-copy="t=104">Field of view and sensor attachment in the original study</summary><div class="mask-figures"><figure><img src="assets/figures/schema.png" alt="Polar angular diagram with straight upper and lower boundaries" data-copy="alt=105"><figcaption data-copy="t=106">Fig. 1b · Idealised angular field</figcaption></figure><figure><img src="assets/figures/aufsatz.png" alt="Schematic view through the attachment with slightly curved upper and lower edges" data-copy="alt=107"><figcaption data-copy="t=108">Fig. 6d · Geometry of the sensor attachment</figcaption></figure></div><p data-copy="t=109">Excerpts from Zauner, Broszio &amp; Bieske (2023). Red marks the accepted field in Figure 1b. Black marks the shaded area in Figure 6d. <a href="https://doi.org/10.3390/clockssleep5030032" target="_blank" rel="noopener noreferrer" data-copy="t=110">Original paper</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></p></details>
+      <h4 data-copy="t=112">Direct and reflected light</h4>
+      <p data-copy="t=113">The ceiling panel is 1.20 m long and 0.90 m wide. The wall panel and daylight window occupy the same opening in the front wall. It is 2.60 m wide and 1.83 m high. The lower edge is level with the desktop at 72 cm, and the top is 2.55 m above the floor. Both sources emit diffuse light and give the same reading for the same luminous flux.</p>
+      <p data-copy="t=114">With the front wall light off, the ceiling panel supplies all the luminous flux. Turning the wall light back on restores the previous split. In “Room size”, the luminous ceiling keeps the same luminance. Turning on the wall source adds the same output as at the starting position in experiment 01.</p>
+      <p data-copy="t=115">By default, the floor diffusely reflects 20% of the incident light, the walls and desk each reflect 50%, and the ceiling reflects 80%. The glass face of the wall panel and window reflects 8% in the mirror direction. The model uses this value at all angles of incidence, based on a 4 mm sheet of uncoated clear glass. The figure and chair illustrate the seating position. <a href="https://www.pilkington.com/~/media/624A9636357741C49BEE4A3D2C76F02C.ashx" target="_blank" rel="noopener noreferrer" data-copy="t=116">Pilkington Optifloat™ Clear, technical data</a></p>
+      <h4 data-copy="t=117">Illuminance and angles</h4>
+      <p data-copy="t=118">Illuminance at the eye is given in lux (lx). The reference is the open hemispherical reading at the starting position in experiment 01, with a level gaze and the default reflectances. It starts at 250 lx and can be changed in the results panel. The reading with the selected attachment is also shown as a percentage of the open reading at the same position and gaze direction. Each surface contributes according to its luminance, apparent size and angle of incidence.</p>
+      <p data-copy="t=119">In the sensor view, the centre is 0° and every point on the rim is 90° from the line of sight. A diameter spans 180°. The 30° and 60° rings show angular distance from the centre. In this equidistant projection, image radius is proportional to angle. The section view shows the vertical plane through the line of sight. Light from surfaces to either side also contributes to the reading.</p>
+      <details class="technical"><summary data-copy="t=120">Calculation and independent checks</summary><div class="vf-notes"><p data-copy="t=121">R integrates direct light over the emitting surfaces. Each patch contributes according to its luminance, the cosine factors at source and receiver, and the inverse square of the distance. For narrow visible ceiling strips and the wall source, the model integrates analytically across the width. Along the other dimension it uses adaptive integration for the ceiling and Gaussian quadrature for the wall source.</p><p data-copy="t=122">For diffuse interreflections, deterministic ray samples give view factors between 39 surface patches. Reciprocal exchange areas are balanced to conserve energy. A finer subdivision captures the first reflection and shading by the desktop. Light falling directly on the desk from the window or wall panel can be calculated analytically even when the desk touches the wall. At the glass, R follows rays in the mirror direction. It integrates the path from source to glass to eye using a virtual image of the source and the finite glass opening. The radiosity solution includes further paths via matte surfaces and glass. The display uses values precomputed in R. Room colours identify materials and light sources. The animation samples possible light paths across the emitting surfaces. An open circle marks a reflection. The frequency of the animated paths is illustrative. The results panel gives the calculated illuminance at the eye in lux.</p>
+      <h4 data-copy="t=123">Numerical comparison</h4>
+<p data-copy="t=124">All values below use 250 lx for the open reference reading in experiment 01. Direct light was independently checked from the receiver side in 27 configurations. More than a million directions per configuration sample the open sensor and both attachments. The largest difference from integration over the emitting surfaces is 0.135 lx.</p>
+<p data-copy="t=125">For reflected light, an independently implemented R path tracer follows two million random paths backwards from the eye per scene. Eight separate runs give the estimate and its standard error. The table shows reflected illuminance at the open sensor in lux. The same comparison was made for both attachments.</p>
+<table class="verify-table"><thead><tr><th scope="col" data-copy="t=126">Scene</th><th scope="col">Radiosity</th><th scope="col" data-copy="t=128">Path tracer ± standard error</th></tr></thead><tbody>
+<tr><th scope="row">4 × 3 m, −45°</th><td data-copy="t=130">109.71</td><td data-copy="t=131">109.13 ± 0.18</td></tr>
+<tr><th scope="row">4 × 3 m, −35°</th><td data-copy="t=133">104.77</td><td data-copy="t=134">104.22 ± 0.26</td></tr>
+<tr><th scope="row" data-copy="t=135">Reflective desk and glass</th><td data-copy="t=136">63.29</td><td data-copy="t=137">63.01 ± 0.17</td></tr>
+<tr><th scope="row" data-copy="t=138">Light-coloured room, luminous ceiling</th><td data-copy="t=139">202.77</td><td data-copy="t=140">202.25 ± 0.43</td></tr>
+<tr><th scope="row" data-copy="t=141">Ceiling and wall light, starting position</th><td data-copy="t=142">55.19</td><td data-copy="t=143">55.89 ± 0.32</td></tr>
+<tr><th scope="row" data-copy="t=144">Wall light only</th><td data-copy="t=145">30.10</td><td data-copy="t=146">32.25 ± 0.19</td></tr>
+<tr><th scope="row" data-copy="t=147">Large room, ceiling panel</th><td data-copy="t=148">2.34</td><td data-copy="t=149">2.44 ± 0.12</td></tr>
+<tr><th scope="row" data-copy="t=150">Luminous ceiling, only glass reflects</th><td data-copy="t=151">1.31</td><td data-copy="t=152">1.31 ± 0.02</td></tr>
+<tr><th scope="row" data-copy="t=153">Seat at the rear wall</th><td data-copy="t=154">40.19</td><td data-copy="t=155">40.44 ± 0.37</td></tr>
+<tr><th scope="row" data-copy="t=156">Desk at the front wall</th><td data-copy="t=157">45.82</td><td data-copy="t=158">46.20 ± 0.32</td></tr>
+<tr><th scope="row" data-copy="t=159">Wall light with the desk at the wall</th><td data-copy="t=160">92.05</td><td data-copy="t=161">93.39 ± 0.18</td></tr>
+<tr><th scope="row" data-copy="t=162">Experiment 02, wall panel off</th><td data-copy="t=163">40.27</td><td data-copy="t=164">40.95 ± 0.27</td></tr>
+<tr><th scope="row" data-copy="t=165">Experiment 04, wall panel off</th><td data-copy="t=166">58.13</td><td data-copy="t=167">58.35 ± 0.41</td></tr>
+<tr><th scope="row" data-copy="t=168">Luminous ceiling and wall light</th><td data-copy="t=169">134.69</td><td data-copy="t=170">135.05 ± 0.25</td></tr>
+<tr><th scope="row" data-copy="t=171">Ceiling panel, only glass reflects</th><td data-copy="t=172">1.79</td><td data-copy="t=173">1.82 ± 0.07</td></tr>
+</tbody></table>
+<p data-copy="t=174">Across 15 scenes with three sensor geometries each, the largest absolute difference is 2.16 lx (wall light only). The largest relative difference from the path tracer is 6.88% (wall light only). Even with all matte surfaces at 0%, the glass can reflect light towards the eye. The model has yet to be compared with measurements in a physical room of the same geometry.</p>
+
+      <p data-copy="t=175 p0=176 p1=177">Generated and checked with R 4.6.1, jsonlite 2.0.0 and base64enc 0.1.6. Run <code>Rscript --vanilla modell.R modelldaten.json</code> to generate the shared model data. <code>Rscript --vanilla pfadpruefung.R modelldaten.json</code> runs the independent check.</p><div class="model-actions"><a class="text-link" id="download-r" data-copy="t=178" href="assets/model/modell.R" download="modell.R">Download R model ↓</a><a class="text-link" id="download-check" data-copy="t=179" href="assets/model/pfadpruefung.R" download="pfadpruefung.R">Download R validation script ↓</a></div></div></details>
+    </section>
+    <section role="tabpanel" id="info-disc" aria-labelledby="tab-disc" data-content="disc" hidden tabindex="0">
+      <h3 data-copy="t=233">A shading disc for lighting design</h3>
+      <p data-copy="t=234">In rooms lit from above, high ceiling lights often account for much of the light excluded by the radiance hood. A matte black disc lets a lighting designer test the contribution from those directions.</p>
+      <svg class="disc-section" viewBox="0 0 420 160" role="img" aria-label="Side view with a level gaze. The disc is centred above the sensor. The line from the sensor to the rim is at +50°." data-copy="aria-label=238">
+        <g class="disc-guides"><path d="M103 32V23 M237 32V23 M103 27H237 M77 43H93 M77 123H157 M82 43V123"/><path class="centreline" d="M170 43V123"/></g>
+        <text x="170" y="20" text-anchor="middle" data-copy="t=239">Ø 16.8 cm</text><text x="74" y="87" text-anchor="end">10 cm</text>
+        <path class="disc-body" d="M103 38H237V43H103Z"/>
+        <path class="disc-edge-ray" d="M170 123 237 43"/><path class="disc-gaze" d="M170 123H376"/>
+        <path class="disc-axis-tip" d="m368 119 8 4-8 4"/>
+        <path class="disc-angle" d="M201 123A31 31 0 0 0 190 99"/>
+        <text class="disc-angle-label" x="204" y="109">+50°</text>
+        <circle class="disc-sensor" cx="170" cy="123" r="4"/><text x="170" y="145" text-anchor="middle">Sensor</text><text x="375" y="145" text-anchor="end" data-copy="t=240">Line of sight</text>
+      </svg>
+      <p data-copy="t=235">Aim the sensor straight ahead at eye level. Centre the horizontal disc 10 cm above the measurement point. With a diameter of 16.8 cm, its rim is at +50° as seen from the sensor. Tilt the disc and sensor together when the gaze changes.</p>
+      <p data-copy="t=236">Compare Open and Disc with the gaze held steady. The difference in lux tells you how much light reaches the sensor from above +50°. The disc admits light from below. The radiance hood used by Zauner et al. also limits light from below. <a href="https://doi.org/10.3390/clockssleep5030032" target="_blank" rel="noopener noreferrer" data-copy="t=237">Zauner et al. (2023), Figs. 1 and 6</a></p>
+      <div class="disc-opt-in"><label class="reflection-switch"><input id="enable-disc" type="checkbox" role="switch" autocomplete="off" aria-labelledby="disc-option-label" aria-describedby="disc-help"><span class="switch" aria-hidden="true"></span><span id="disc-option-label" data-copy="t=241">Enable the experimental disc</span></label>
+        <p id="disc-help" data-copy="t=242">Adds Disc to the field-of-view choices and to playback in experiment 01.</p></div>
+    </section>
+    <section role="tabpanel" id="info-sources" aria-labelledby="tab-sources" data-content="sources" hidden tabindex="0">
+      <h3 data-copy="t=180">Background reading</h3>
+      <p data-copy="p0=181"><strong data-copy="t=182">Diffuse light exchange.</strong> The radiosity method describes how matte surfaces exchange light. <a href="https://doi.org/10.1145/964965.808601" target="_blank" rel="noopener noreferrer">Goral et al. (1984), Modeling the Interaction of Light Between Diffuse Surfaces</a></p>
+      <p data-copy="p0=184"><strong data-copy="t=185">Photometric quantities.</strong> The CIE defines the relationship between luminance, solid angle and illuminance. <a href="https://cie.co.at/eilvterm/17-21-050" target="_blank" rel="noopener noreferrer" data-copy="t=186">CIE International Lighting Vocabulary, luminance</a></p>
+      <p data-copy="p0=187"><strong>CIE S 026/E:2018.</strong> This system describes how to weight optical radiation by the sensitivity of individual photoreceptors. Informative Annex A.6 discusses the spatial limits of the field of view. <a href="https://doi.org/10.25039/S026.2018" target="_blank" rel="noopener noreferrer">CIE S 026/E:2018</a></p>
+      <p data-copy="p1=190"><strong>Zauner, Broszio &amp; Bieske (2023).</strong> <i lang="en">Influence of the Human Field of View on Visual and Non-Visual Quantities in Indoor Environments.</i> Figures 1 and 6 illustrate the angular limits and the design of the radiance hood. Figure 4 and Section 2.1.5 document the classroom study. Figure 5 shows measurements with different head inclinations. <a href="https://doi.org/10.3390/clockssleep5030032" target="_blank" rel="noopener noreferrer">Clocks &amp; Sleep, 5, 476–498</a></p>
+      <details class="technical"><summary data-copy="t=193">Font licences</summary><p data-copy="t=194">DM Sans and Instrument Serif are used under the SIL Open Font License 1.1.</p><pre>Copyright 2014 The DM Sans Project Authors (https://github.com/googlefonts/dm-fonts)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+https://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+&quot;Font Software&quot; refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+&quot;Reserved Font Name&quot; refers to any names specified as such after the
+copyright statement(s).
+
+&quot;Original Version&quot; refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+&quot;Modified Version&quot; refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+&quot;Author&quot; refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION &amp; CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+
+
+Copyright 2022 The Instrument Serif Project Authors (https://github.com/Instrument/instrument-serif)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+https://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+&quot;Font Software&quot; refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+&quot;Reserved Font Name&quot; refers to any names specified as such after the
+copyright statement(s).
+
+&quot;Original Version&quot; refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+&quot;Modified Version&quot; refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+&quot;Author&quot; refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION &amp; CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+</pre></details>
+    </section>
+    <section role="tabpanel" id="info-author" aria-labelledby="tab-author" data-content="author" hidden tabindex="0">
+      <div id="info-biography"></div>
+      <a data-author-link="" class="author-permalink" href="author.html#en" data-copy="t=226">Author page permalink</a>
+    </section>
+  </div>
+</dialog>
+<noscript lang="en">Enable JavaScript to use the interactive experiments.</noscript>
+<script src="assets/copy.js?v=9d696c1813b7"></script>
+<script src="assets/locale.js?v=69178f8273f6"></script>
+<script src="assets/intro-eyes.js?v=1fe6f96d5dcd"></script>
+<script src="assets/intro-meter.js?v=8627136d4159"></script>
+<script src="assets/intro-shell.js?v=0a7497fc4abb"></script>
+<script src="assets/pako-inflate.min.js"></script>
+<script src="assets/data/model.js"></script>
+<script src="assets/app.js?v=e1bee4b43e57"></script>
+<script src="assets/render.js?v=8e88a295a32a"></script>
+<script src="assets/experiment-tour.js?v=d5f1472d3789"></script>
+<script src="assets/start.js?v=ba3dead7cb24"></script>
+</body></html>

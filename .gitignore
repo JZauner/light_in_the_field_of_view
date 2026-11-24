@@ -2,6 +2,7 @@
 *
 !.gitignore
 !.nojekyll
+!/README.md
 !/LICENSE
 !/CITATION.cff
 !/index.html

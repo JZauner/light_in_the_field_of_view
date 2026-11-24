@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use this demonstrator in teaching, research, or a publication, please cite it using this record."
+title: "Light in the field of view"
+type: software
+authors:
+  - given-names: Johannes
+    family-names: Zauner
+    orcid: "https://orcid.org/0000-0003-2171-4566"
+date-released: "2026-11-24"
+url: "https://jzauner.github.io/light_in_the_field_of_view/"
+repository-code: "https://github.com/JZauner/light_in_the_field_of_view"
+license: BSD-3-Clause-Attribution
+license-url: "https://github.com/JZauner/light_in_the_field_of_view/blob/main/LICENSE"

@@ -1,0 +1,72 @@
+Light in the field of view
+Copyright 2026 Johannes Zauner
+
+Citation
+--------
+Zauner, J. (2026). Light in the field of view [Interactive demonstrator].
+https://jzauner.github.io/light_in_the_field_of_view/
+
+Use this citation in teaching materials and publications that use the
+demonstrator. CITATION.cff provides the machine-readable record.
+
+Teaching materials and model data
+---------------------------------
+Johannes Zauner licenses the original teaching text, illustrations, animations
+and published model data under Creative Commons Attribution 4.0 International
+(CC BY 4.0). This includes educational material embedded in the source code.
+When sharing or adapting it, credit Johannes Zauner, link to the demonstrator
+and the licence, and indicate any changes.
+https://creativecommons.org/licenses/by/4.0/
+
+Third-party material
+--------------------
+The visual-field curves in the introduction follow Figure 1a of Johannes
+Zauner, Kai Broszio and Karin Bieske (2023), based on Guth's representation.
+assets/figures/schema.png and assets/figures/aufsatz.png are excerpts from
+Figures 1b and 6d of the same paper. Credit all three authors for these
+materials. The paper is licensed under CC BY 4.0.
+https://doi.org/10.3390/clockssleep5030032
+
+DM Sans and Instrument Serif use the SIL Open Font License 1.1. Their
+copyright notices and licence texts are in assets/fonts/DM-Sans-LICENSE.txt
+and assets/fonts/Instrument-Serif-LICENSE.txt.
+
+The pako inflate library carries the MIT licence and copyright notice of
+Vitaly Puzrin and Andrei Tuputcyn in assets/pako-inflate.min.js.
+
+Software
+--------
+The original application code and R model scripts are licensed under BSD
+with Attribution (SPDX identifier BSD-3-Clause-Attribution).
+
+Copyright 2026 Johannes Zauner
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its contributors
+   may be used to endorse or promote products derived from this software
+   without specific prior written permission.
+
+4. Redistributions of any form whatsoever must retain the following
+   acknowledgment: 'This product includes software developed by the "Light in
+   the field of view" project (Johannes Zauner, 2026,
+   https://jzauner.github.io/light_in_the_field_of_view/).'
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

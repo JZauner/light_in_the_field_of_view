@@ -2,6 +2,8 @@
 *
 !.gitignore
 !.nojekyll
+!/LICENSE
+!/CITATION.cff
 !/index.html
 !/intro-eyes.html
 !/intro-meter.html

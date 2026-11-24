@@ -601,10 +601,8 @@
 
   function readerFace(id, movable=false) {
     const ink = '#344e43';
-    const neck=movable?`<path data-guide-neck fill="url(#${id}skin)" stroke="${ink}" stroke-width="1.8"/>
-      <g data-guide-head>`:'';
     const jaw=movable?'Q155 144 142 125L131 115Z':'c-2 5-2 13 2 19-2 4-7 7-14 8-13 2-25-4-31-13 5-8 8-20 7-31-.6-7-2.6-12-6-16l-5 1Z';
-    return `${neck}<path d="M131 115c-4-13-4-29 3-41 8-17 27-23 43-19 14 4 21 14 23 26l-1 12c0 4 2 7 2 10 1 4 5 9 8 13 1 2 0 4-3 5l-5 1-1 6-3 2 2 3c-1 5-4 11-11 13l-10 1${jaw}" fill="url(#${id}skin)" stroke="${ink}" stroke-width="1.8"/>
+    const head=`<path d="M131 115c-4-13-4-29 3-41 8-17 27-23 43-19 14 4 21 14 23 26l-1 12c0 4 2 7 2 10 1 4 5 9 8 13 1 2 0 4-3 5l-5 1-1 6-3 2 2 3c-1 5-4 11-11 13l-10 1${jaw}" fill="url(#${id}skin)" stroke="${ink}" stroke-width="1.8"/>
       ${movable?'':'<path d="M149 126c9 13 20 19 29 21-3 6-2 11 0 17-13-5-23-19-29-38Z" fill="#c18560" opacity=".60"/>'}
       <path d="M152 132c7 8 15 13 23 14" fill="none" stroke="#a26b50" stroke-width="1.2"/>
       <path d="M111 84c-12-2-17-11-14-20 3-10 14-15 22-11 8 3 9 13 6 20-3 6-7 10-14 11Z" fill="#37473d" stroke="#2f4035" stroke-width="1.8"/>
@@ -615,10 +613,13 @@
       <path d="M141 108q2-7 7-2l1 4-4 1 3 4" stroke="#986d52" fill="none" stroke-width="1.2"/>
       <path d="M182 95c4-3 8-4 13-2l2 2c-6-1-9-1-14 2Z" fill="#465044"/>
       ${readerEye(id)}
-      <path d="M201 117q2 1 4 0m-13 12q4 1 8-1m-5 6 2-.3" fill="none" stroke="#8d634c" stroke-width="1.05"/>
-      ${movable?'</g>':''}
-      <path d="M129 158c10 9 23 16 36 14 6 0 12-4 15-8l4 4c-5 8-12 12-21 12-15 0-29-8-38-18Z" fill="#326c59" stroke="#406f5b" stroke-width="1.15"/>
+      <path d="M201 117q2 1 4 0m-13 12q4 1 8-1m-5 6 2-.3" fill="none" stroke="#8d634c" stroke-width="1.05"/>`;
+    const collar=`<path d="M129 158c10 9 23 16 36 14 6 0 12-4 15-8l4 4c-5 8-12 12-21 12-15 0-29-8-38-18Z" fill="#326c59" stroke="#406f5b" stroke-width="1.15"/>
       <path d="M129 160c11 10 24 16 36 15 7-1 13-4 16-7" stroke="#97b29a" stroke-width="1.1" fill="none"/>`;
+    if(!movable)return head+collar;
+    // The collar covers the base of the neck, and the lowered chin covers the collar.
+    return `<path data-guide-neck fill="url(#${id}skin)" stroke="${ink}" stroke-width="1.8"/>
+      ${collar}<g data-guide-head>${head}</g>`;
   }
 
   function sensor(id, lang) {

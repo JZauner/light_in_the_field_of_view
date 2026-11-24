@@ -205,6 +205,7 @@ dialog{width:min(680px,calc(100% - 28px));max-height:min(86dvh,800px);padding:0;
 .disc-opt-in .reflection-switch{font-size:15px;min-height:36px}
 .disc-opt-in p{font-size:13px;color:var(--sub)}
 .dialog-body [role=tabpanel]:focus-visible{outline:2px solid #007f83;outline-offset:5px}
+.dialog-body .license-credit{border-inline-start:3px solid var(--green);padding:6px 12px;background:var(--paper);overflow-wrap:anywhere}
 .dialog-body #info-author .author-bio{font-size:19px;line-height:1.45;color:var(--ink)}
 .dialog-body .author-study h2{font-size:25px;font-weight:400}
 .author-permalink{display:inline-block;margin-top:12px;font-size:13px}

@@ -135,6 +135,7 @@ function displayRoute(first=false){
   }
   syncFullscreen();updateLinks(route.chapter,route.author);
 }
+window.removeEventListener('hashchange',onGuideHashChange);
 window.addEventListener('hashchange',()=>displayRoute());
 document.querySelector('.skip').addEventListener('click',event=>{
   event.preventDefault();const target=el(!el('guide-page').hidden?'guide-title':authorVisible?'author-bio':'headline');target.focus();
@@ -142,6 +143,7 @@ document.querySelector('.skip').addEventListener('click',event=>{
 buildNavigation();installSettings();reflectionControls();drawLogo();installDragging();
 el('retry-data').addEventListener('click',()=>refresh());
 displayRoute(true);
+installIntroPreload();
 
 if(window.ResizeObserver){
   new ResizeObserver(scheduleDraw).observe(el('drawing'));

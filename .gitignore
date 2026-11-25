@@ -14,7 +14,9 @@
 !/assets/*.css
 !/assets/data/
 !/assets/data/model.js
+!/assets/data/seat-index.js
 !/assets/data/room-*.js
+!/assets/data/ceiling-*.js
 !/assets/figures/
 !/assets/figures/mark.svg
 !/assets/figures/aufsatz.png

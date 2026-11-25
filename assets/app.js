@@ -3,42 +3,163 @@ const el = id => document.getElementById(id);
 const data = globalThis.lightModel || JSON.parse(el('model-data').textContent);
 const config = data.config;
 const pendingRooms=new Map();
+const labSeats=new Map(),pendingSeats=new Map();
+let seatRangesAvailable=/^https?:$/.test(location.protocol)&&Boolean(globalThis.lightSeatIndex);
 let refreshNumber=0;
-function hasRoom(size){
-  return Boolean(el('room-'+size)||globalThis.lightRoomData?.[size]);
+let roomLoadTimer,neighbourTimer;
+let labPreloadAxis=null;
+function hasRoom(size,ceilingOnly){
+  const room=globalThis.lightRoomData?.[size];
+  return Boolean(el('room-'+size)||(ceilingOnly?room:room?.seats));
 }
-function requestRoom(size){
-  if(hasRoom(size))return Promise.resolve();
-  if(pendingRooms.has(size))return pendingRooms.get(size);
+function requestRoom(size,ceilingOnly,background=false){
+  if(hasRoom(size,ceilingOnly))return Promise.resolve();
+  if(ceilingOnly&&pendingRooms.has('room-'+size))return requestRoom(size,false,background);
+  const key=(ceilingOnly?'ceiling-':'room-')+size;
+  const pending=pendingRooms.get(key);
+  if(pending){
+    if(!background)pending.script.fetchPriority='high';
+    return pending.request;
+  }
   const script=document.createElement('script');
+  script.fetchPriority=background?'low':'high';
   const request=new Promise((resolve,reject)=>{
-    script.src='assets/data/room-'+size+'.js';
-    script.onload=()=>hasRoom(size)?resolve():reject(new Error('Room '+size));
+    script.src='assets/data/'+key+'.js';
+    script.onload=()=>hasRoom(size,ceilingOnly)?resolve():reject(new Error('Room '+size));
     script.onerror=()=>reject(new Error('Room '+size));
     document.head.append(script);
-  }).finally(()=>{pendingRooms.delete(size);script.remove();});
-  pendingRooms.set(size,request);
+  }).finally(()=>{pendingRooms.delete(key);script.remove();});
+  pendingRooms.set(key,{script,request});
   return request;
+}
+function hasLabSeat(size,eye){
+  return hasRoom(size,false)||Boolean(labSeats.get(size)?.[eye]);
+}
+async function fetchLabSeat(size,eye,background){
+  const index=globalThis.lightSeatIndex[size],[first,last]=index.rows[eye];
+  const response=await fetch('assets/data/room-'+size+'.js',{
+    headers:{Range:'bytes='+first+'-'+last},priority:background?'low':'high'
+  });
+  if(!response.ok&&response.status!==416)throw new Error('Seat data: HTTP '+response.status);
+  const expected='bytes '+first+'-'+last+'/'+index.bytes;
+  const encoding=response.headers.get('Content-Encoding');
+  if(response.status===206&&response.headers.get('Content-Range')===expected&&(!encoding||encoding==='identity')){
+    const text=await response.text();
+    let row;
+    try{row=JSON.parse(text);}catch{}
+    if(row&&['direct','delta','pct'].every(key=>typeof row[key]==='string')){
+      if(!labSeats.has(size))labSeats.set(size,[]);
+      labSeats.get(size)[eye]=row;
+      return;
+    }
+  }
+  // Some static servers ignore ranges or apply them to a compressed representation.
+  // Let the normal script loader handle a full room on those hosts.
+  if(!response.bodyUsed&&response.body)response.body.cancel().catch(()=>{});
+  seatRangesAvailable=false;
+}
+function requestLabSetting(size,eye,background=false){
+  if(hasRoom(size,false))return Promise.resolve();
+  if(!seatRangesAvailable||pendingRooms.has('room-'+size)){
+    return background?Promise.resolve():requestRoom(size,false);
+  }
+  const shared=requestRoom(size,true,background);
+  if(hasLabSeat(size,eye))return shared;
+  const key=size+'/'+eye;
+  if(!pendingSeats.has(key)){
+    pendingSeats.set(key,fetchLabSeat(size,eye,background).finally(()=>pendingSeats.delete(key)));
+  }
+  const seat=pendingSeats.get(key).then(()=>{
+    if(!background&&!hasLabSeat(size,eye))return requestRoom(size,false);
+  });
+  return Promise.all([shared,seat]);
+}
+function installIntroPreload(){
+  if(!/^https?:$/.test(location.protocol))return;
+  const defaultRoom=presets[0].size;
+  const otherRooms=Array.from(data.room.keys()).filter(size=>size!==defaultRoom);
+  // The default room covers experiments 01–04. Prepare every ceiling for 05
+  // before downloading the remaining seat positions for the open lab.
+  const queue=[
+    {size:defaultRoom,ceilingOnly:false},
+    ...otherRooms.map(size=>({size,ceilingOnly:true})),
+    ...otherRooms.map(size=>({size,ceilingOnly:false}))
+  ];
+  let timer,loading=false;
+  function canLoad(){
+    return queue.length>0&&!loading&&!document.hidden&&navigator.onLine!==false&&
+      !navigator.connection?.saveData&&Boolean(readRoute().guide);
+  }
+  function schedule(){
+    clearTimeout(timer);
+    if(canLoad())timer=setTimeout(loadNext,60);
+  }
+  async function loadNext(){
+    if(!canLoad())return;
+    const {size,ceilingOnly}=queue.shift();
+    loading=true;
+    try{
+      await requestRoom(size,ceilingOnly,true);
+    }catch{
+      // A foreground selection can retry a failed background download.
+    }finally{
+      loading=false;
+      schedule();
+    }
+  }
+  window.addEventListener('hashchange',schedule);
+  window.addEventListener('pageshow',schedule);
+  window.addEventListener('online',schedule);
+  document.addEventListener('visibilitychange',schedule);
+  navigator.connection?.addEventListener?.('change',schedule);
+  schedule();
+}
+function preloadNeighbours(){
+  clearTimeout(neighbourTimer);
+  const lab=chapter===5,axis=lab?labPreloadAxis:'size';
+  if((chapter!==4&&!lab)||!axis||navigator.connection?.saveData||(lab&&!seatRangesAvailable))return;
+  const {size,eye}=current(),origin=chapter;
+  neighbourTimer=setTimeout(()=>{
+    if(chapter!==origin||current().size!==size||current().eye!==eye||el('main').hidden||document.hidden)return;
+    const value=axis==='size'?size:eye;
+    for(const next of [value+1,value-1]){
+      if(next<0||next>ranges[axis])continue;
+      // A failed speculative load is retried if the user makes that selection.
+      const load=lab?requestLabSetting(axis==='size'?next:size,axis==='eye'?next:eye,true):requestRoom(next,true,true);
+      load.catch(()=>{});
+    }
+  },100);
 }
 function roomStatus(status){
   const node=el('data-status'),pending=Boolean(status);
-  node.hidden=!pending;el('main').classList.toggle('model-pending',pending);
-  el('main').setAttribute('aria-busy',String(status==='loading'));
+  const keepRoom=pending&&sceneChapter===chapter&&(chapter===4||chapter===5);
+  node.hidden=!pending;el('main').classList.toggle('model-pending',pending&&!keepRoom);
+  for(const id of ['scene','result-section'])el(id).setAttribute('aria-busy',String(status==='loading'));
   el('retry-data').hidden=status!=='error';
-  node.firstElementChild.textContent=status==='error'?tr('Raumdaten konnten nicht geladen werden.'):pending?tr('Raummodell wird geladen …'):'';
+  let message='';
+  if(status==='error')message=tr('Raumdaten konnten nicht geladen werden.');
+  else if(pending)message=tr(keepRoom?'Raum wird aktualisiert …':'Raummodell wird geladen …');
+  if(keepRoom&&chapter===5)message+=' '+tr('Die vorherige Einstellung ist noch zu sehen.');
+  else if(keepRoom){
+    const dimensions=numberFormat.format(sceneModel.room.width)+' × '+meters(sceneModel.room.depth);
+    message+=' '+tr('Angezeigt wird der Raum mit {size}.',{size:dimensions});
+  }
+  if(node.firstElementChild.textContent!==message)node.firstElementChild.textContent=message;
 }
 
 const sceneRooms = new Map();
-function roomFor(state) {
+function roomFor(state,onlyRoof) {
   const id = 'room-'+state.size;
+  const downloaded=globalThis.lightRoomData?.[state.size];
   if (!sceneRooms.has(id)) {
-    const stored = globalThis.lightRoomData?.[state.size] || JSON.parse(el(id).textContent);
-    const reflection = JSON.parse(new TextDecoder().decode(inflateBlock(stored.roof)));
-    reflection.seats = stored.seats;
+    const stored = downloaded || JSON.parse(el(id).textContent);
     if(sceneRooms.size>=4)sceneRooms.delete(sceneRooms.keys().next().value);
-    sceneRooms.set(id,{...data.room[state.size],views:stored.views,reflection,paths:stored.paths});
+    sceneRooms.set(id,{...data.room[state.size],views:stored.views,roof:stored.roof,paths:stored.paths,seats:stored.seats});
   }
-  return sceneRooms.get(id);
+  const room=sceneRooms.get(id);
+  room.seats=downloaded?.seats||room.seats||labSeats.get(state.size);
+  if(onlyRoof&&!room.reflection)room.reflection=JSON.parse(new TextDecoder().decode(inflateBlock(room.roof)));
+  return room;
 }
 // R liefert die Tabellen in komprimierten Byte-Ebenen. Beim ersten Aufruf
 // einer Neigung werden nur deren fertige Werte entpackt.
@@ -73,11 +194,14 @@ function unpackSeries(text,material){
   }
   return values;
 }
-let latestSeat={};
+// Keep the current and pinned seats decoded while the lab compares them.
+const decodedSeats=new Map();
 function panelMeasurements(room,eye,state,t,j,geoValues){
-  const raw=room.reflection.seats[eye];
-  if(latestSeat.raw!==raw)latestSeat={raw,direct:unpackSeries(raw.direct,false)};
-  if(state.reflect&&!latestSeat.delta){latestSeat.delta=unpackSeries(raw.delta,true);latestSeat.err=inflateBlock(raw.pct);}
+  const raw=room.seats[eye];
+  const seat=decodedSeats.get(raw)||{direct:unpackSeries(raw.direct,false)};
+  decodedSeats.delete(raw);decodedSeats.set(raw,seat);
+  if(decodedSeats.size>2)decodedSeats.delete(decodedSeats.keys().next().value);
+  if(state.reflect&&!seat.delta){seat.delta=unpackSeries(raw.delta,true);seat.err=inflateBlock(raw.pct);}
   // R hat alle elf Stufen berechnet. Eine arithmetische Folge ist mit ihren
   // Endpunkten kodiert, die Restbytes stellen die exakten R-Prozentwerte wieder her.
   const mix=sourceMix(state);
@@ -85,13 +209,13 @@ function panelMeasurements(room,eye,state,t,j,geoValues){
     const a=arr[(row*30+state.lamp)*3+sensor],b=arr[(row*30+29)*3+sensor];
     return a*(10-mix)+b*mix;
   };
-  const base=[0,1,2].map(k=>lift(latestSeat.direct,t,k));
-  const delta=state.reflect?[0,1,2].map(k=>lift(latestSeat.delta,j*16+t,k)):[0,0,0];
+  const base=[0,1,2].map(k=>lift(seat.direct,t,k));
+  const delta=state.reflect?[0,1,2].map(k=>lift(seat.delta,j*16+t,k)):[0,0,0];
   const sum=base.map((v,k)=>v+delta[k]);
   let percent=geoValues[6]===255?[null,null,null]:[100,geoValues[6],geoValues[7]];
   if(state.reflect){
     const addr=((((j*16+t)*29+state.lamp)*11+mix)*2);
-    const actual=[1,2].map(k=>((sum[0]?Math.floor((sum[k]/sum[0])*100+.5):255)+latestSeat.err[addr+k-1])&255);
+    const actual=[1,2].map(k=>((sum[0]?Math.floor((sum[k]/sum[0])*100+.5):255)+seat.err[addr+k-1])&255);
     percent=actual[0]===255?[null,null,null]:[100,...actual];
   }
   const decode=v=>v/1000;
@@ -140,13 +264,14 @@ const fixed = {ne:data.room[0].seatX.length,nl:data.room[0].lampX.length,nm:data
 const ranges = {eye:fixed.ne-1,lamp:fixed.nl-1,mix:fixed.nm-1,size:data.room.length-1,tilt:data.pitches[data.pitches.length-1].deg};
 let probeAngle = 60;
 let chapter = 0, view = 'room', showRays = true, saved = null, sceneModel, frameHandle = 0, announceTimer = 0;
+let sceneChapter=-1;
 const preference = matchMedia('(prefers-reduced-motion: reduce)');
 const playState = {running:false,elapsed:0,start:0,finished:false};
 const meters = v => numberFormat.format(v) + ' m';
 function current() { return states[chapter]; }
 function readScene(state = current(), onlyRoof = chapter === 4) {
   const daylight=state.source==='window';
-  const room=roomFor(state),pitchIndex=data.pitches.findIndex(p=>p.deg===state.tilt);
+  const room=roomFor(state,onlyRoof),pitchIndex=data.pitches.findIndex(p=>p.deg===state.tilt);
   const frame=data.pitches[pitchIndex],roomView=room.views[pitchIndex];
   const eyeIndex=onlyRoof?config.midEye:state.eye;
   const idx=(state.size*fixed.ne+eyeIndex)*fixed.nl+state.lamp;
@@ -165,7 +290,7 @@ function readScene(state = current(), onlyRoof = chapter === 4) {
   const axis=hitsPanel?[panelX,config.lampH,5]:[hitX,hitZ,surface];
   const seat=room.seatX[eyeIndex];
   const wallPower=onlyRoof&&state.source!=='off'?100*config.roofWallPower:data.wallShare[sourceMix(state)];
-  return {room,frame,onlyRoof,mask:state.mask,mix:wallPower,ceilingPower:onlyRoof?100:100-wallPower,source:state.source,
+  return {room,frame,onlyRoof,size:state.size,eyeIndex,lampIndex:state.lamp,mask:state.mask,mix:wallPower,ceilingPower:onlyRoof?100:100-wallPower,source:state.source,
     seat,eye:seat+frame.eyeOffset,eyeZ:frame.eyeZ,lamp:room.lampX[state.lamp],axis,
     open:optical.total[0],chosen:optical.total[state.mask],percent,optical,totalText,directPositive,reflect:state.reflect,window:daylight,
     wallLo:config.wallLo,
@@ -316,6 +441,15 @@ function installSettings(){
   for(const key of sliderKeys){
     const input=el('range-'+key);
     input.max=ranges[key];
+    if(key==='size'||key==='eye'){
+      const anticipate=()=>{
+        if(chapter!==5)return;
+        labPreloadAxis=key;
+        if(el('data-status').hidden)preloadNeighbours();
+      };
+      input.addEventListener('pointerenter',anticipate);
+      input.addEventListener('focus',anticipate);
+    }
     if(key==='tilt'){
       input.min=data.pitches[0].deg;
       input.step=data.pitches[1].deg-data.pitches[0].deg;
@@ -475,20 +609,30 @@ function paintResult(m,state){
 
 function refresh(shouldAnnounce=false) {
   const state=current(),revision=++refreshNumber;
+  clearTimeout(roomLoadTimer);clearTimeout(neighbourTimer);
   syncSettings(state);
   el('intro-text').textContent=chapterIntro();
-  const needed=[state.size];
-  if(chapter===5&&saved&&saved.size!==state.size)needed.push(saved.size);
-  const missing=needed.filter(size=>!hasRoom(size));
+  const lab=chapter===5,ceilingOnly=chapter===4;
+  if(lab&&sceneChapter===5){
+    if(sceneModel.size!==state.size)labPreloadAxis='size';
+    else if(sceneModel.eyeIndex!==state.eye)labPreloadAxis='eye';
+  }else labPreloadAxis=null;
+  const needed=lab&&saved?[state,saved]:[state];
+  const missing=needed.filter(({size,eye})=>!hasRoom(size,ceilingOnly||lab)||(lab&&!hasLabSeat(size,eye)));
   if(missing.length){
     roomStatus('loading');
-    Promise.all(missing.map(requestRoom)).then(()=>{
+    const load=()=>Promise.all(missing.map(({size,eye})=>lab?requestLabSetting(size,eye):requestRoom(size,ceilingOnly))).then(()=>{
       if(revision===refreshNumber)refresh(shouldAnnounce);
     }).catch(()=>{if(revision===refreshNumber)roomStatus('error');});
+    // Let a drag settle before fetching intermediate room sizes or seating positions.
+    if(sceneChapter===chapter&&((ceilingOnly&&shouldAnnounce&&!pendingRooms.has('ceiling-'+state.size))||
+        (lab&&!pendingSeats.has(state.size+'/'+state.eye))))
+      roomLoadTimer=setTimeout(load,50);
+    else load();
     return;
   }
   if(!el('data-status').hidden)roomStatus('');
-  const m=readScene();sceneModel=m;
+  const m=readScene();sceneModel=m;sceneChapter=chapter;
   drawParameterPictures(m,state);
   const defined=m.percent!==null;
   paintResult(m,state);
@@ -511,6 +655,7 @@ function refresh(shouldAnnounce=false) {
   updateProbe();
   if(shouldAnnounce) announce(summary);
   scheduleDraw();
+  preloadNeighbours();
 }
 function spokenResult(){
   if(!sceneModel||!el('data-status').hidden)return el('data-status').firstElementChild.textContent;

@@ -56,9 +56,9 @@ function drawLogo(){
   g.beginPath();g.arc(10,28,2.5,0,Math.PI*2);g.fillStyle='#faf2c5';g.fill();g.restore();
 }
 function dimension(a,b,text,offset=0){
-  const y=a[1]+offset,co='#738475';line([a[0],y],[b[0],y],co,.8);
-  for(const x of [a[0],b[0]])line([x-2.5,y+3],[x+2.5,y-3],co,.9);
-  words(text,(a[0]+b[0])/2,y+10,{size:cw<500?10:11,color:'#4c6356',align:'center',halo:true});
+  const co='#738475';line([a[0],a[1]+offset],[b[0],b[1]+offset],co,.8);
+  for(const [x,y] of [a,b])line([x-2.5,y+offset+3],[x+2.5,y+offset-3],co,.9);
+  words(text,(a[0]+b[0])/2,(a[1]+b[1])/2+offset+10,{size:cw<500?10:11,color:'#4c6356',align:'center',halo:true});
 }
 function furnitureFace(P,vertices,fill,stroke,width,faces){
   quad(P,vertices,fill,stroke,width);
@@ -215,13 +215,51 @@ function seatedHead(base,s,m){
   figureShape('M-.158 -1.212 Q-.143 -1.216 -.148 -1.20 L-.155 -1.194',null,'#9a6b4d',.004);
   ctx.restore();
 }
-function roomProjection(m) {
-  const w=m.room.width,d=m.room.depth,h=config.roomH,kx=.61,ky=.245;
+let ceilingResize=null;
+function displayRoomWidth(m,time){
+  const width=m.room.width;
+  if(!m.onlyRoof||preference.matches)return width;
+  if(!ceilingResize)ceilingResize={from:width,to:width,start:time};
+  const {from,to,start}=ceilingResize;
+  const t=within((time-start)/240,0,1);
+  const visible=t===1?to:between(from,to,t*t*(3-2*t));
+  if(to!==width){
+    const animate=Math.max(visible,width)>data.room[defaultState.size].width;
+    ceilingResize={from:animate?visible:width,to:width,start:time};
+    if(animate)scheduleDraw();
+    return ceilingResize.from;
+  }
+  if(from!==to&&t<1)scheduleDraw();
+  return visible;
+}
+function roomProjection(m,displayWidth=m.room.width) {
+  const w=displayWidth,ratio=w/m.room.width,d=m.room.depth*ratio,h=config.roomH,kx=.61,ky=.245;
   const marginX=cw<520?18:32,top=ch<280?20:25,bottom=27;
+  const standardWidth=data.room[defaultState.size].width;
+  if(m.onlyRoof&&displayWidth>standardWidth){
+    // Keep the original plan direction. In larger rooms the viewpoint gradually
+    // lowers until the underside of the ceiling clears the other room elements.
+    const largestWidth=data.room[ranges.size].width;
+    const t=within((displayWidth-standardWidth)/(largestWidth-standardWidth),0,1);
+    const blend=t*t*(3-2*t),distance=Math.hypot(w,d);
+    const depthUnit=Math.hypot(1,kx),horizon=config.eyeH;
+    const project=(x,y,z)=>{
+      const dx=x-d/2,depth=(kx*dx+y)/depthUnit;
+      const scale=distance/(distance+blend*depth);
+      return [(dx-kx*y)*scale,(horizon-z-(1-blend)*ky*y)*scale];
+    };
+    const corners=[[0,-w/2],[0,w/2],[d,-w/2],[d,w/2]];
+    const floor=corners.map(([x,y])=>project(x,y,0)),roof=corners.map(([x,y])=>project(x,y,h));
+    const left=Math.min(...floor.map(p=>p[0])),right=Math.max(...floor.map(p=>p[0]));
+    const upper=Math.min(...roof.map(p=>p[1])),lower=Math.max(...floor.map(p=>p[1]));
+    const s=Math.min((cw-2*marginX)/(right-left+.25),(ch-top-bottom)/(lower-upper+.18));
+    const ox=(cw-s*(left+right))/2,oy=(ch+top-bottom-s*(upper+lower))/2;
+    return {s,perspective:true,P:(x,y,z)=>{const [px,py]=project(x*ratio,y*ratio,z);return [ox+s*px,oy+s*py];}};
+  }
   const s=Math.min((cw-2*marginX)/(d+kx*w+.25),(ch-top-bottom)/(h+ky*w+.18));
   const modelW=(d+kx*w)*s, modelH=(h+ky*w)*s;
   const left=(cw-modelW)/2, y0=top+(ch-top-bottom-modelH)/2+(h+ky*w/2)*s;
-  return {s,P:(x,y,z)=>[left+(x+kx*w/2-kx*y)*s,y0-(z+ky*y)*s]};
+  return {s,P:(x,y,z)=>[left+(x*ratio+kx*w/2-kx*y*ratio)*s,y0-(z+ky*y*ratio)*s]};
 }
 function quad(P,coords,fill,stroke='#879887',width=.85){path(coords.map(v=>P(...v)),fill,stroke,width);}
 function box(P,x0,x1,y0,y1,z0,z1,colors,foreground){
@@ -313,11 +351,13 @@ function sightLine(P,m,eye,tip=P(m.axis[0],0,m.axis[1])){
   }
   line(eye,tip,art.axis,1.2,[5,3.4]);
   const previous=gazeLayout;
-  if(!previous||previous.scene!==m||previous.cw!==cw||previous.ch!==ch||previous.view!==view){
+  if(!previous||previous.scene!==m||previous.cw!==cw||previous.ch!==ch||previous.view!==view||
+     previous.tip[0]!==tip[0]||previous.tip[1]!==tip[1]||previous.eye[0]!==eye[0]||previous.eye[1]!==eye[1]){
     gazeLayout={eye,tip,scene:m,view,cw,ch};
-    el('gaze-tip').setAttribute('transform','translate('+tip[0]+' '+tip[1]+') rotate('+(-m.frame.deg)+')');
+    const rotation=Math.atan2(tip[1]-eye[1],tip[0]-eye[0])*180/Math.PI;
+    el('gaze-tip').setAttribute('transform','translate('+tip[0]+' '+tip[1]+') rotate('+rotation+')');
     el('gaze-control').setAttribute('aria-valuenow',m.frame.deg);
-    el('gaze-control').setAttribute('aria-valuetext',sliderValue('tilt',current()));
+    el('gaze-control').setAttribute('aria-valuetext',sliderValue('tilt',{tilt:m.frame.deg}));
   }
 }
 let gazeLayout=null;
@@ -407,11 +447,11 @@ function exampleGeometry(m,source,sample,section){
 }
 function preparedPaths(m,section){
   if(exampleCache.scene===m&&exampleCache.section===section)return exampleCache;
-  const state=current(),si=section?1:0,tilt=data.pitches.indexOf(m.frame);
+  const si=section?1:0,tilt=data.pitches.indexOf(m.frame);
   const block=m.room.paths[si][tilt];
   if(unpackedPaths.block!==block)unpackedPaths={block,bytes:inflateBlock(block)};
-  const samples=pathLibrary.recipe,n=samples.length,eye=m.onlyRoof?config.midEye:state.eye;
-  const src=[...(m.ceilingPower>0?[m.onlyRoof?30:state.lamp]:[]),...(m.mix>0?[29]:[])];
+  const samples=pathLibrary.recipe,n=samples.length,eye=m.eyeIndex;
+  const src=[...(m.ceilingPower>0?[m.onlyRoof?30:m.lampIndex]:[]),...(m.mix>0?[29]:[])];
   const direct=[],reflected=[],faces=['desk','floor','ceiling','wall','wall','wall','wall'];
   for(const source of src){
     const dpool=[],rpool=[],offset=(eye*31+source)*n;
@@ -512,14 +552,21 @@ function addDrag(key,anchor,s,rx,ry) {
   pickTargets.push({key,x:anchor[0],y:anchor[1],rx,ry,s});
 }
 function roomScene(m,t){
-  const {P,s}=roomProjection(m),d=m.room.depth,w=m.room.width;
+  const {P,s,perspective}=roomProjection(m,displayRoomWidth(m,t)),d=m.room.depth,w=m.room.width;
   architecture(P,s,m);
   const base=P(m.seat,0,0),eye=P(m.eye,0,m.eyeZ);
   ellipse([base[0]-.10*s,base[1]+.01*s],.55*s,.12*s,'rgba(64,79,60,.14)',-.10);
   if(!m.onlyRoof)panel(P,m);
   const foreground=[];
   desk(P,s,m,true,foreground);chair(P,m,true,foreground);seatedBodyInRoom(P,s,m,foreground);
-  fan(eye,within(s*.58,19,44),m);
+  const radius=within(s*.58,19,44);
+  if(perspective){
+    // Project the two axes of the field diagram into the same side plane as the gaze ray.
+    const ahead=P(m.eye+.01,0,m.eyeZ),down=P(m.eye,0,m.eyeZ-.01),unit=.01*s;
+    ctx.save();
+    ctx.transform((ahead[0]-eye[0])/unit,(ahead[1]-eye[1])/unit,(down[0]-eye[0])/unit,(down[1]-eye[1])/unit,...eye);
+    fan([0,0],radius,m);ctx.restore();
+  }else fan(eye,radius,m);
   seatedHead(base,s,m);
   drawEyePaths(P,s,m,t);
   const lamp=P(m.lamp,0,config.lampH),right=P(d,-config.wallY/2,config.wallHi);
@@ -866,11 +913,17 @@ function draw(t){
   const rect=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,3);
   cw=rect.width;ch=rect.height;
   if(cw<1||ch<1)return;
+  tickExperiment(t);
+  if(el('main').classList.contains('model-pending')){
+    // Wait if there is no suitable scene. During a resize, keep drawing the displayed room.
+    if(playState.running)scheduleDraw();
+    return;
+  }
   const px=Math.round(cw*dpr),py=Math.round(ch*dpr);
   if(canvas.width!==px||canvas.height!==py){canvas.width=px;canvas.height=py;}
   ctx.setTransform(px/cw,0,0,py/ch,0,0);ctx.clearRect(0,0,cw,ch);
   ctx.lineCap='round';ctx.lineJoin='round';pickTargets=[];
-  tickExperiment(t);
+  if(!sceneModel.onlyRoof||view!=='room'||preference.matches)ceilingResize=null;
   if(view==='room')roomScene(sceneModel,t);else if(view==='cut')cutScene(sceneModel,t);else sensorScene(sceneModel,t);
   miniSensor(sceneModel,t);
   if(playState.running)scheduleDraw();

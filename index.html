@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#f8f7f1">
 <meta name="description" content="Explore how the field of view affects light measurements at the eye. Five guided experiments and an open lab in an interactive model room." data-copy="content=0">
 <title data-copy="t=1">Light in the field of view · Interactive room model</title>
-<link rel="stylesheet" href="assets/site.css?v=1c04275f2af1">
+<link rel="stylesheet" href="assets/site.css?v=c0485f5bdd77">
 <link rel="stylesheet" href="assets/intro.css?v=8257a672d0e4">
 </head>
 <body data-edition="web">
@@ -26,7 +26,6 @@
 <div class="nav-wrap" hidden><nav class="shell chapter-nav" aria-label="Choose an experiment" id="chapter-nav" data-copy="aria-label=9"></nav></div>
 <main id="main" class="shell" hidden>
   <div class="intro"><h1 id="headline" tabindex="-1" data-copy="t=10">What does a sensor at the eye measure?</h1><p id="intro-text" data-copy="t=230">Compare readings with the sensor open and with a radiance hood fitted. Tilt the gaze to see which light reaches the eye.</p></div>
-  <div id="data-status" class="data-status" role="status" hidden><span></span> <button id="retry-data" class="text-link" type="button" hidden data-copy="t=12">Try again</button></div>
   <div class="studio">
     <div class="visual-column"><figure class="board" aria-labelledby="board-caption">
       <div class="board-top">
@@ -37,7 +36,9 @@
         </div>
         <label class="ray-toggle" id="ray-control"><input id="rays" type="checkbox" checked><span class="switch" aria-hidden="true"></span><span id="rays-label" data-copy="t=17">Light paths</span></label>
       </div>
-      <div class="drawing" id="drawing"><canvas id="scene" role="img" aria-describedby="scene-description" aria-label="Interactive room section showing the sensor at the eye, light sources and incoming light" data-copy="aria-label=18"></canvas><div class="gaze-surface"><svg class="gaze-layer" id="gaze-layer" hidden><g id="gaze-control" tabindex="0" role="slider" aria-label="Gaze angle at the arrowhead" aria-orientation="vertical" aria-valuemin="-45" aria-valuemax="30" aria-valuenow="0" data-copy="aria-label=19">
+      <div class="drawing" id="drawing">
+        <div id="data-status" class="data-status" role="status" hidden><span></span> <button id="retry-data" class="text-link" type="button" hidden data-copy="t=12">Try again</button></div>
+        <canvas id="scene" role="img" aria-describedby="scene-description" aria-label="Interactive room section showing the sensor at the eye, light sources and incoming light" data-copy="aria-label=18"></canvas><div class="gaze-surface"><svg class="gaze-layer" id="gaze-layer" hidden><g id="gaze-control" tabindex="0" role="slider" aria-label="Gaze angle at the arrowhead" aria-orientation="vertical" aria-valuemin="-45" aria-valuemax="30" aria-valuenow="0" data-copy="aria-label=19">
           <title data-copy="t=20">Drag the arrowhead up or down to tilt the gaze</title>
           <g id="gaze-tip"><circle class="gaze-padding" r="18"></circle><path class="gaze-arrow" d="M-8 0H0 M-7 -4.5 0 0 -7 4.5"></path></g>
         </g></svg></div><button id="lens" class="lens" aria-label="Enlarge sensor view" hidden data-copy="aria-label=21"><canvas id="lens-preview" width="160" height="160" aria-hidden="true"></canvas><span data-copy="t=22">Sensor view ↗</span></button></div>
@@ -466,15 +467,16 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   </div>
 </dialog>
 <noscript lang="en">Enable JavaScript to use the interactive experiments.</noscript>
-<script src="assets/copy.js?v=58bd592dc8bd"></script>
+<script src="assets/copy.js?v=60744be36901"></script>
 <script src="assets/locale.js?v=69178f8273f6"></script>
 <script src="assets/intro-eyes.js?v=c4a56752289e"></script>
 <script src="assets/intro-meter.js?v=8627136d4159"></script>
-<script src="assets/intro-shell.js?v=0a7497fc4abb"></script>
+<script src="assets/intro-shell.js?v=8cb06af78d02"></script>
 <script src="assets/pako-inflate.min.js"></script>
 <script src="assets/data/model.js"></script>
-<script src="assets/app.js?v=a20da7590cf0"></script>
-<script src="assets/render.js?v=c3dc54672b16"></script>
+<script src="assets/data/seat-index.js?v=946b31247dc5"></script>
+<script src="assets/app.js?v=6b490afeefd1"></script>
+<script src="assets/render.js?v=d41402377b37"></script>
 <script src="assets/experiment-tour.js?v=d5f1472d3789"></script>
-<script src="assets/start.js?v=ba3dead7cb24"></script>
+<script src="assets/start.js?v=6c34f69909fa"></script>
 </body></html>

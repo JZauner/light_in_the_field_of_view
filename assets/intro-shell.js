@@ -309,18 +309,29 @@ const introShell=(()=>{
 
 installFullscreen();
 document.addEventListener('click',keepFullscreenNavigation);
-if(document.body.dataset.edition==='intro'){
-  function showEntry(focus){
-    const route=readRoute();
-    if(language!==route.language)applyLocale(route.language);
-    introShell.show(route.guide,focus);
-    syncFullscreen();
-  }
-  document.querySelector('.skip').addEventListener('click',event=>{
-    event.preventDefault();document.getElementById('guide-title').focus();
-  });
-  showEntry(false);window.addEventListener('hashchange',()=>showEntry(true));
+// The introduction can turn pages before the experiment model has arrived.
+function showGuideRoute(focus){
+  const route=readRoute();
+  if(!route.guide)return;
+  if(language!==route.language)applyLocale(route.language);
+  introShell.show(route.guide,focus);
+  syncFullscreen();
+}
+function onGuideHashChange(){showGuideRoute(true);}
+const standaloneIntro=document.body.dataset.edition==='intro';
+if(standaloneIntro&&/^https?:$/.test(location.protocol)){
+  // Older hosted links enter the same document that will use the preloaded data.
+  const route=readRoute();
+  const entry=new URL('index.html',location.href);
+  entry.search=location.search;
+  entry.hash=guideHash(route.language,route.guide.step);
+  location.replace(entry.href);
 }else{
-  const landing=readRoute();
-  if(landing.guide)introShell.show(landing.guide,false);
+  if(standaloneIntro){
+    document.querySelector('.skip').addEventListener('click',event=>{
+      event.preventDefault();document.getElementById('guide-title').focus();
+    });
+  }
+  showGuideRoute(false);
+  window.addEventListener('hashchange',onGuideHashChange);
 }
